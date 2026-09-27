@@ -191,7 +191,7 @@
             background: rgba(255, 77, 77, 0.15);
         }
 
-        /* Main Layout with Safe Area Paddings for Fullscreen PWA */
+        /* Main Layout */
         .app-layout {
             position: fixed;
             top: max(env(safe-area-inset-top, 12px), 12px);
@@ -541,7 +541,7 @@
         
         <div class="settings-content">
             <div class="settings-group">
-                <label class="settings-label">Backend Host (Ollama / Cloud Tunnel)</label>
+                <label class="settings-label">Backend Host URL</label>
                 <input type="text" id="hostUrl" class="settings-input" placeholder="http://localhost:11434" onchange="saveHostAndReload()" />
                 <div id="connectionStatus" class="status-text"><span id="settingsStatusDot" class="status-dot"></span> Status: Checking connection...</div>
             </div>
@@ -631,7 +631,6 @@
             if (savedHost) {
                 hostInput.value = savedHost;
             } else {
-                // Smart fallback: default to localhost
                 hostInput.value = 'http://localhost:11434';
             }
         }
@@ -647,6 +646,11 @@
             const saved = localStorage.getItem(HOST_STORAGE_KEY);
             if (saved) return saved.trim().replace(/\/$/, '');
             return 'http://localhost:11434';
+        }
+
+        // Helper to wrap requests in the CORS proxy so browser security doesn't block local calls
+        function proxyUrl(targetUrl) {
+            return 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
         }
 
         // Load or initialize chats
@@ -814,7 +818,8 @@
             const statusEl = document.getElementById('connectionStatus');
 
             try {
-                const response = await fetch(`${host}/api/tags`);
+                const target = `${host}/api/tags`;
+                const response = await fetch(proxyUrl(target));
                 if (!response.ok) throw new Error("Connection failed");
                 
                 const data = await response.json();
@@ -840,7 +845,7 @@
                 }
 
             } catch (err) {
-                statusEl.innerHTML = `<span id="settingsStatusDot" class="status-dot"></span> Status: Offline / CORS blocked`;
+                statusEl.innerHTML = `<span id="settingsStatusDot" class="status-dot"></span> Status: Offline`;
                 setConnectedStatus(false);
                 listEl.innerHTML = '<div class="model-picker-item" style="color: #ff4d4d;">Could not reach backend.</div>';
             }
@@ -875,7 +880,8 @@
             statusEl.textContent = `Requesting download for ${modelName}...`;
 
             try {
-                const response = await fetch(`${host}/api/pull`, {
+                const target = `${host}/api/pull`;
+                const response = await fetch(proxyUrl(target), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: modelName, stream: false })
@@ -944,7 +950,8 @@
             setGeneratingState(true);
 
             try {
-                const response = await fetch(`${host}/api/chat`, {
+                const target = `${host}/api/chat`;
+                const response = await fetch(proxyUrl(target), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     signal: activeController.signal,
