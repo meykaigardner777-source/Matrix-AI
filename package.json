@@ -1,0 +1,26 @@
+{
+  "name": "modeldeck",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "build": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.modeldeck.app",
+    "productName": "ModelDeck",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": ["nsis"]
+    },
+    "files": [
+      "index.html",
+      "main.js"
+    ]
+  }
+}
