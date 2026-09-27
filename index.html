@@ -648,8 +648,16 @@
             return 'http://localhost:11434';
         }
 
-        // Helper to wrap requests in the CORS proxy so browser security doesn't block local calls
+        // Check if running as an Electron desktop app
+        function isElectron() {
+            return window.navigator.userAgent.toLowerCase().includes('electron');
+        }
+
+        // Smart proxy wrapper: Direct local calls for Electron, public proxy for web browsers
         function proxyUrl(targetUrl) {
+            if (isElectron()) {
+                return targetUrl;
+            }
             return 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
         }
 
