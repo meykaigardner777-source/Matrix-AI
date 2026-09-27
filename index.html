@@ -194,10 +194,10 @@
         /* Main Layout with Safe Area Paddings for Fullscreen PWA */
         .app-layout {
             position: fixed;
-            top: env(safe-area-inset-top, 12px);
-            left: env(safe-area-inset-left, 12px);
-            right: env(safe-area-inset-right, 12px);
-            bottom: env(safe-area-inset-bottom, 12px);
+            top: max(env(safe-area-inset-top, 12px), 12px);
+            left: max(env(safe-area-inset-left, 12px), 12px);
+            right: max(env(safe-area-inset-right, 12px), 12px);
+            bottom: max(env(safe-area-inset-bottom, 12px), 12px);
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -541,8 +541,8 @@
         
         <div class="settings-content">
             <div class="settings-group">
-                <label class="settings-label">Backend Host (Ollama)</label>
-                <input type="text" id="hostUrl" class="settings-input" value="http://localhost:11434" onchange="loadModels()" />
+                <label class="settings-label">Backend Host (Ollama / Cloud Tunnel)</label>
+                <input type="text" id="hostUrl" class="settings-input" placeholder="http://localhost:11434" onchange="saveHostAndReload()" />
                 <div id="connectionStatus" class="status-text"><span id="settingsStatusDot" class="status-dot"></span> Status: Checking connection...</div>
             </div>
 
@@ -611,6 +611,7 @@
 
     <script>
         const STORAGE_KEY = 'modeldeck_chats_v3';
+        const HOST_STORAGE_KEY = 'modeldeck_host_url';
         let chats = [];
         let currentChatId = null;
         let currentModel = null;
@@ -623,8 +624,34 @@
             });
         }
 
+        // Initialize Host URL input field automatically
+        function initHost() {
+            const hostInput = document.getElementById('hostUrl');
+            const savedHost = localStorage.getItem(HOST_STORAGE_KEY);
+            if (savedHost) {
+                hostInput.value = savedHost;
+            } else {
+                // Smart fallback: default to localhost
+                hostInput.value = 'http://localhost:11434';
+            }
+        }
+
+        function saveHostAndReload() {
+            const hostInput = document.getElementById('hostUrl');
+            let val = hostInput.value.trim().replace(/\/$/, '');
+            localStorage.setItem(HOST_STORAGE_KEY, val);
+            loadModels();
+        }
+
+        async function getHost() {
+            const saved = localStorage.getItem(HOST_STORAGE_KEY);
+            if (saved) return saved.trim().replace(/\/$/, '');
+            return 'http://localhost:11434';
+        }
+
         // Load or initialize chats
         function loadChats() {
+            initHost();
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
                 if (raw) chats = JSON.parse(raw);
@@ -735,8 +762,8 @@
             document.getElementById('apiModalOverlay').classList.remove('active');
         }
 
-        function updateApiDocsEndpoint() {
-            const host = document.getElementById('hostUrl').value.trim().replace(/\/$/, '');
+        async function updateApiDocsEndpoint() {
+            const host = await getHost();
             document.getElementById('apiEndpointUrl').textContent = `${host}/v1/chat/completions`;
         }
 
@@ -778,10 +805,6 @@
                 dot1.classList.remove('connected');
                 dot2.classList.remove('connected');
             }
-        }
-
-        async function getHost() {
-            return document.getElementById('hostUrl').value.trim();
         }
 
         async function loadModels() {
