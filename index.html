@@ -653,12 +653,12 @@
             return window.navigator.userAgent.toLowerCase().includes('electron');
         }
 
-        // Smart proxy wrapper: Direct local calls for Electron, public proxy for web browsers
+        // Smart proxy wrapper: Direct local calls for Electron, AllOrigins proxy for web browsers
         function proxyUrl(targetUrl) {
             if (isElectron()) {
                 return targetUrl;
             }
-            return 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
+            return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl);
         }
 
         // Load or initialize chats
