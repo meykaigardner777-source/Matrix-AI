@@ -1,6 +1,6 @@
 {
-  "name": "ModelDeck",
-  "short_name": "ModelDeck",
+  "name": "Matrix AI",
+  "short_name": "Matrix AI",
   "description": "Local AI Manager & Chat Interface",
   "start_url": "./index.html",
   "display": "standalone",
