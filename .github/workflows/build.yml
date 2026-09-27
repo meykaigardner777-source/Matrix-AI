@@ -28,5 +28,5 @@ jobs:
       - name: Upload Windows Installer
         uses: actions/upload-artifact@v4
         with:
-          name: ModelDeck-Windows-Installer
+          name: Matrix AI-Windows-Installer
           path: dist/*.exe
