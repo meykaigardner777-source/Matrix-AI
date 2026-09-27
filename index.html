@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>ModelDeck - AI Manager & Chat</title>
+    <title>Matrix AI - AI Manager & Chat</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -58,12 +58,12 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            width: 95vw;
+            width: 93vw;
             max-width: 600px;
             height: 82dvh;
             background: rgba(14, 14, 14, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             padding: 16px;
@@ -191,7 +191,7 @@
             background: rgba(255, 77, 77, 0.15);
         }
 
-        /* Main Layout */
+        /* Main Layout with Safe Area Paddings for Fullscreen PWA */
         .app-layout {
             position: fixed;
             top: max(env(safe-area-inset-top, 12px), 12px);
@@ -208,7 +208,7 @@
             flex: 1;
             min-width: 0;
             background: rgba(10, 10, 10, 0.88);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 8px;
@@ -309,8 +309,8 @@
         }
 
         .message.user {
-            background-color: rgba(0, 122, 255, 0.85);
-            color: white;
+            background-color: rgba(213, 213, 213, 0.85);
+            color: rgb(2, 2, 2);
             border-bottom-right-radius: 2px;
         }
 
@@ -368,8 +368,8 @@
             flex-shrink: 0;
         }
 
-        .app-button { background-color: rgba(30, 150, 70, 0.9); width: 100%; }
-        .app-button:hover { background-color: rgba(40, 160, 80, 1); }
+        .app-button { background-color: rgba(96, 96, 96, 0.9); width: 100%; }
+        .app-button:hover { background-color: rgb(136, 136, 136); }
 
         .send-button { background-color: rgba(30, 150, 70, 0.9); }
         .send-button:hover { background-color: rgba(40, 160, 80, 1); }
@@ -541,7 +541,7 @@
         
         <div class="settings-content">
             <div class="settings-group">
-                <label class="settings-label">Backend Host URL</label>
+                <label class="settings-label">Backend Host (Ollama / Cloud Tunnel)</label>
                 <input type="text" id="hostUrl" class="settings-input" placeholder="http://localhost:11434" onchange="saveHostAndReload()" />
                 <div id="connectionStatus" class="status-text"><span id="settingsStatusDot" class="status-dot"></span> Status: Checking connection...</div>
             </div>
@@ -631,6 +631,7 @@
             if (savedHost) {
                 hostInput.value = savedHost;
             } else {
+                // Smart fallback: default to localhost
                 hostInput.value = 'http://localhost:11434';
             }
         }
@@ -646,19 +647,6 @@
             const saved = localStorage.getItem(HOST_STORAGE_KEY);
             if (saved) return saved.trim().replace(/\/$/, '');
             return 'http://localhost:11434';
-        }
-
-        // Check if running as an Electron desktop app
-        function isElectron() {
-            return window.navigator.userAgent.toLowerCase().includes('electron');
-        }
-
-        // Smart proxy wrapper: Direct local calls for Electron, AllOrigins proxy for web browsers
-        function proxyUrl(targetUrl) {
-            if (isElectron()) {
-                return targetUrl;
-            }
-            return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl);
         }
 
         // Load or initialize chats
@@ -826,8 +814,7 @@
             const statusEl = document.getElementById('connectionStatus');
 
             try {
-                const target = `${host}/api/tags`;
-                const response = await fetch(proxyUrl(target));
+                const response = await fetch(`${host}/api/tags`);
                 if (!response.ok) throw new Error("Connection failed");
                 
                 const data = await response.json();
@@ -853,7 +840,7 @@
                 }
 
             } catch (err) {
-                statusEl.innerHTML = `<span id="settingsStatusDot" class="status-dot"></span> Status: Offline`;
+                statusEl.innerHTML = `<span id="settingsStatusDot" class="status-dot"></span> Status: Offline / CORS blocked`;
                 setConnectedStatus(false);
                 listEl.innerHTML = '<div class="model-picker-item" style="color: #ff4d4d;">Could not reach backend.</div>';
             }
@@ -888,8 +875,7 @@
             statusEl.textContent = `Requesting download for ${modelName}...`;
 
             try {
-                const target = `${host}/api/pull`;
-                const response = await fetch(proxyUrl(target), {
+                const response = await fetch(`${host}/api/pull`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name: modelName, stream: false })
@@ -958,8 +944,7 @@
             setGeneratingState(true);
 
             try {
-                const target = `${host}/api/chat`;
-                const response = await fetch(proxyUrl(target), {
+                const response = await fetch(`${host}/api/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     signal: activeController.signal,
