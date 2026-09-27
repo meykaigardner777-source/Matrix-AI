@@ -1,5 +1,5 @@
 {
-  "name": "modeldeck",
+  "name": "Matrix AI",
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
@@ -10,8 +10,8 @@
     "electron-builder": "^25.1.8"
   },
   "build": {
-    "appId": "com.modeldeck.app",
-    "productName": "ModelDeck",
+    "appId": "com.Matrix AI.app",
+    "productName": "Matrix AI",
     "directories": {
       "output": "dist"
     },
