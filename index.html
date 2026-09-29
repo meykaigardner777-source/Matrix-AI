@@ -320,6 +320,42 @@
             border-bottom-left-radius: 2px;
         }
 
+        /* Code Block Styling inside Assistant Messages */
+        .message pre {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            padding: 10px;
+            margin: 8px 0;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        .code-block-container {
+            position: relative;
+            margin: 8px 0;
+        }
+
+        .run-code-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(30, 150, 70, 0.9);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            z-index: 5;
+        }
+        .run-code-btn:hover {
+            background: rgba(40, 160, 80, 1);
+        }
+
         .message-meta {
             font-size: 11px;
             color: #888888;
@@ -399,7 +435,7 @@
             letter-spacing: 0.5px;
         }
 
-        .settings-input {
+        .settings-input, .settings-select {
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 6px;
@@ -409,11 +445,16 @@
             outline: none;
         }
 
+        .settings-select option {
+            background: #121212;
+            color: #ffffff;
+        }
+
         .model-picker-list {
             display: flex;
             flex-direction: column;
             gap: 6px;
-            max-height: 150px;
+            max-height: 180px;
             overflow-y: auto;
         }
 
@@ -432,6 +473,43 @@
         .model-picker-item.active {
             border-color: #ffffff;
             background: rgba(255, 255, 255, 0.15);
+        }
+
+        .model-picker-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        /* Black & Grey SVG Action Buttons */
+        .model-action-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+            color: #b0b0b0;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 0;
+        }
+        .model-action-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+        .model-action-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        .model-action-btn.pinned {
+            background: rgba(180, 180, 180, 0.2);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.4);
         }
 
         .status-text {
@@ -464,7 +542,39 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        /* Modal Overlay for API Info popup */
+        .danger-button {
+            background: rgba(200, 50, 50, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 6px;
+            padding: 0 14px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .danger-button:hover {
+            background: rgba(200, 50, 50, 0.4);
+        }
+
+        /* Progress Bar for Pulling */
+        .progress-bar-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            height: 6px;
+            margin-top: 6px;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: #2ecc71;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        /* Modal Overlays */
         .api-modal-overlay {
             position: fixed;
             inset: 0;
@@ -510,6 +620,70 @@
             line-height: 1.5;
             word-break: break-all;
         }
+
+        /* Code Runner Modal Workspace */
+        .runner-modal {
+            background: rgba(14, 14, 14, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            width: 95vw;
+            max-width: 900px;
+            height: 85dvh;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+        }
+        .runner-body {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+            min-height: 0;
+        }
+        @media(max-width: 768px) {
+            .runner-body {
+                flex-direction: column;
+            }
+        }
+        .runner-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+        .pane-label {
+            font-size: 11px;
+            color: #888888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .code-editor {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            color: #ffffff;
+            font-family: monospace;
+            font-size: 13px;
+            padding: 10px;
+            resize: none;
+            outline: none;
+            line-height: 1.4;
+        }
+        .code-editor:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        .preview-frame {
+            flex: 1;
+            background: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -547,7 +721,21 @@
             </div>
 
             <div class="settings-group">
-                <label class="settings-label">Installed Models</label>
+                <label class="settings-label">RAM Allocation Limit</label>
+                <select id="ramLimitSelect" class="settings-select" onchange="saveRamLimit()">
+                    <option value="4">4 GB RAM Limit</option>
+                    <option value="6">6 GB RAM Limit</option>
+                    <option value="8">8 GB RAM Limit</option>
+                    <option value="10">10 GB RAM Limit</option>
+                    <option value="12">12 GB RAM Limit</option>
+                    <option value="16">16 GB RAM Limit</option>
+                    <option value="-1" selected>Unlimited (Default)</option>
+                </select>
+                <div class="status-text">Restricts context window memory allocation footprints.</div>
+            </div>
+
+            <div class="settings-group">
+                <label class="settings-label">Installed Models (Pin or Manage)</label>
                 <div id="modelPickerList" class="model-picker-list">
                     <div class="model-picker-item">Loading models...</div>
                 </div>
@@ -561,10 +749,37 @@
                     <button type="button" class="app-button" style="flex: 1;" onclick="pullModel()">Pull Model</button>
                     <button type="button" class="secondary-button" onclick="openApiModal()">API Info</button>
                 </div>
+                <div class="progress-bar-container" id="pullProgressBarContainer">
+                    <div class="progress-bar-fill" id="pullProgressBarFill"></div>
+                </div>
                 <div id="pullStatus" class="status-text"></div>
             </div>
         </div>
     </aside>
+
+    <!-- Model Options Modal Page -->
+    <div id="modelOptionsOverlay" class="api-modal-overlay" onclick="closeModelOptionsModal()">
+        <div class="api-modal" onclick="event.stopPropagation()">
+            <div class="api-modal-header">
+                <span>Model Options</span>
+                <button class="close-sidebar-btn" onclick="closeModelOptionsModal()">Close</button>
+            </div>
+            <div class="settings-content" style="gap: 12px; max-height: none;">
+                <div class="settings-group">
+                    <label class="settings-label">Technical Model ID</label>
+                    <input type="text" id="optModelId" class="settings-input" readonly style="opacity: 0.7; cursor: not-allowed;" />
+                </div>
+                <div class="settings-group">
+                    <label class="settings-label">Custom Display Name</label>
+                    <input type="text" id="optModelNickname" class="settings-input" placeholder="e.g. My Fast Coder Model" />
+                </div>
+                <div class="row-group" style="margin-top: 4px;">
+                    <button type="button" class="app-button" style="flex: 1;" onclick="saveModelOptions()">Save Changes</button>
+                    <button type="button" class="danger-button" onclick="deleteInstalledModel()">Delete Model</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- API Details Popup Modal -->
     <div id="apiModalOverlay" class="api-modal-overlay" onclick="closeApiModal(event)">
@@ -579,6 +794,29 @@
                 <b>Method:</b> POST<br>
                 <b>Headers:</b> Content-Type: application/json<br>
                 <b>Body Format:</b> <code>{"model": "model_name", "messages": [{"role": "user", "content": "hello"}]}</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Runner & Live Editor Modal -->
+    <div id="runnerModalOverlay" class="api-modal-overlay" onclick="closeRunnerModal()">
+        <div class="runner-modal" onclick="event.stopPropagation()">
+            <div class="api-modal-header">
+                <span>Interactive Code Runner & Editor</span>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button class="app-button" style="height: 30px; padding: 0 10px; font-size: 11px;" onclick="runEditableCode()">Re-Run</button>
+                    <button class="close-sidebar-btn" onclick="closeRunnerModal()">Close</button>
+                </div>
+            </div>
+            <div class="runner-body">
+                <div class="runner-pane">
+                    <span class="pane-label">Editable Source Code</span>
+                    <textarea id="runnerCodeEditor" class="code-editor" spellcheck="false"></textarea>
+                </div>
+                <div class="runner-pane">
+                    <span class="pane-label">Live Preview Sandbox</span>
+                    <iframe id="runnerPreviewFrame" class="preview-frame" sandbox="allow-scripts allow-modals"></iframe>
+                </div>
             </div>
         </div>
     </div>
@@ -612,10 +850,16 @@
     <script>
         const STORAGE_KEY = 'modeldeck_chats_v3';
         const HOST_STORAGE_KEY = 'modeldeck_host_url';
+        const NICKNAMES_KEY = 'modeldeck_nicknames_v1';
+        const PINNED_KEY = 'modeldeck_pinned_v1';
+        const RAM_LIMIT_KEY = 'modeldeck_ram_limit_v2';
+
         let chats = [];
         let currentChatId = null;
         let currentModel = null;
         let activeController = null;
+        let activePreviewBlobUrl = null;
+        let editingModelName = null;
 
         // Register Service Worker for offline capability
         if ('serviceWorker' in navigator) {
@@ -624,16 +868,14 @@
             });
         }
 
-        // Initialize Host URL input field automatically
         function initHost() {
             const hostInput = document.getElementById('hostUrl');
             const savedHost = localStorage.getItem(HOST_STORAGE_KEY);
-            if (savedHost) {
-                hostInput.value = savedHost;
-            } else {
-                // Smart fallback: default to localhost
-                hostInput.value = 'http://localhost:11434';
-            }
+            hostInput.value = savedHost ? savedHost : 'http://localhost:11434';
+
+            const ramSelect = document.getElementById('ramLimitSelect');
+            const savedRam = localStorage.getItem(RAM_LIMIT_KEY);
+            if (savedRam) ramSelect.value = savedRam;
         }
 
         function saveHostAndReload() {
@@ -643,13 +885,25 @@
             loadModels();
         }
 
+        function saveRamLimit() {
+            const ramSelect = document.getElementById('ramLimitSelect');
+            localStorage.setItem(RAM_LIMIT_KEY, ramSelect.value);
+        }
+
         async function getHost() {
             const saved = localStorage.getItem(HOST_STORAGE_KEY);
             if (saved) return saved.trim().replace(/\/$/, '');
             return 'http://localhost:11434';
         }
 
-        // Load or initialize chats
+        function getNicknames() {
+            try { return JSON.parse(localStorage.getItem(NICKNAMES_KEY)) || {}; } catch(e) { return {}; }
+        }
+
+        function getPinnedModels() {
+            try { return JSON.parse(localStorage.getItem(PINNED_KEY)) || []; } catch(e) { return []; }
+        }
+
         function loadChats() {
             initHost();
             try {
@@ -686,7 +940,8 @@
 
             if (chat.model) {
                 currentModel = chat.model;
-                document.getElementById('modelNameLabel').textContent = currentModel;
+                const nicknames = getNicknames();
+                document.getElementById('modelNameLabel').textContent = nicknames[currentModel] || currentModel;
             }
 
             const container = document.getElementById('chatMessages');
@@ -762,6 +1017,140 @@
             document.getElementById('apiModalOverlay').classList.remove('active');
         }
 
+        // Model Options Page Controls
+        function openModelOptionsModal(modelName) {
+            editingModelName = modelName;
+            document.getElementById('optModelId').value = modelName;
+            
+            const nicknames = getNicknames();
+            document.getElementById('optModelNickname').value = nicknames[modelName] || '';
+            
+            document.getElementById('modelOptionsOverlay').classList.add('active');
+        }
+
+        function closeModelOptionsModal() {
+            document.getElementById('modelOptionsOverlay').classList.remove('active');
+            editingModelName = null;
+        }
+
+        function saveModelOptions() {
+            if (!editingModelName) return;
+            const newName = document.getElementById('optModelNickname').value.trim();
+            const nicknames = getNicknames();
+
+            if (newName === '' || newName === editingModelName) {
+                delete nicknames[editingModelName];
+            } else {
+                nicknames[editingModelName] = newName;
+            }
+
+            localStorage.setItem(NICKNAMES_KEY, JSON.stringify(nicknames));
+            loadModels();
+
+            if (currentModel === editingModelName) {
+                document.getElementById('modelNameLabel').textContent = nicknames[editingModelName] || editingModelName;
+            }
+
+            closeModelOptionsModal();
+        }
+
+        async function deleteInstalledModel() {
+            if (!editingModelName) return;
+            if (!confirm(`Are you sure you want to delete model "${editingModelName}" from your Ollama backend?`)) return;
+
+            const host = await getHost();
+            try {
+                const response = await fetch(`${host}/api/delete`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: editingModelName })
+                });
+
+                if (!response.ok) throw new Error("Failed to delete model");
+
+                // Clean up nickname/pin records if any
+                let nicknames = getNicknames();
+                delete nicknames[editingModelName];
+                localStorage.setItem(NICKNAMES_KEY, JSON.stringify(nicknames));
+
+                let pinned = getPinnedModels().filter(m => m !== editingModelName);
+                localStorage.setItem(PINNED_KEY, JSON.stringify(pinned));
+
+                closeModelOptionsModal();
+                loadModels();
+            } catch (err) {
+                alert(`Error deleting model: ${err.message}`);
+            }
+        }
+
+        // Code Runner Modal Controls
+        function openRunnerModal(codeText) {
+            document.getElementById('runnerCodeEditor').value = codeText;
+            document.getElementById('runnerModalOverlay').classList.add('active');
+            renderPreview(codeText);
+        }
+
+        function closeRunnerModal() {
+            document.getElementById('runnerModalOverlay').classList.remove('active');
+            if (activePreviewBlobUrl) {
+                URL.revokeObjectURL(activePreviewBlobUrl);
+                activePreviewBlobUrl = null;
+            }
+        }
+
+        function runEditableCode() {
+            const code = document.getElementById('runnerCodeEditor').value;
+            renderPreview(code);
+        }
+
+        function renderPreview(code) {
+            const frame = document.getElementById('runnerPreviewFrame');
+            if (activePreviewBlobUrl) {
+                URL.revokeObjectURL(activePreviewBlobUrl);
+                activePreviewBlobUrl = null;
+            }
+
+            const lower = code.toLowerCase();
+            let finalHtml = '';
+
+            if (!lower.includes('<!doctype') && !lower.includes('<html>')) {
+                finalHtml = `<!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body { font-family: system-ui, sans-serif; padding: 16px; background: #0c0c0c; color: #00ff66; margin: 0; }
+                        h3 { color: #ffffff; font-size: 13px; border-bottom: 1px solid #333333; padding-bottom: 6px; margin-top: 0; }
+                        #console-output { white-space: pre-wrap; font-family: monospace; font-size: 12px; line-height: 1.4; color: #aaffaa; }
+                    </style>
+                </head>
+                <body>
+                    <h3>Execution Output / Preview</h3>
+                    <div id="console-output"></div>
+                    <script>
+                        const originalLog = console.log;
+                        const out = document.getElementById('console-output');
+                        console.log = function(...args) {
+                            originalLog.apply(console, args);
+                            out.textContent += args.map(arg => typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg).join(' ') + '\\n';
+                        };
+                        try {
+                            ${code}
+                        } catch (err) {
+                            out.style.color = '#ff6b6b';
+                            out.textContent += 'Error: ' + err.message + '\\n';
+                        }
+                    <\/script>
+                </body>
+                </html>`;
+            } else {
+                finalHtml = code;
+            }
+
+            const blob = new Blob([finalHtml], { type: 'text/html' });
+            activePreviewBlobUrl = URL.createObjectURL(blob);
+            frame.src = activePreviewBlobUrl;
+        }
+
         async function updateApiDocsEndpoint() {
             const host = await getHost();
             document.getElementById('apiEndpointUrl').textContent = `${host}/v1/chat/completions`;
@@ -827,16 +1216,42 @@
                     return;
                 }
 
-                data.models.forEach(model => {
+                const nicknames = getNicknames();
+                const pinnedSet = new Set(getPinnedModels());
+
+                let sortedModels = [...data.models].sort((a, b) => {
+                    const aPinned = pinnedSet.has(a.name);
+                    const bPinned = pinnedSet.has(b.name);
+                    if (aPinned && !bPinned) return -1;
+                    if (!aPinned && bPinned) return 1;
+                    return a.name.localeCompare(b.name);
+                });
+
+                sortedModels.forEach(model => {
+                    const isPinned = pinnedSet.has(model.name);
+                    const displayName = nicknames[model.name] || model.name;
+
                     const item = document.createElement('div');
                     item.className = `model-picker-item ${currentModel === model.name ? 'active' : ''}`;
-                    item.innerHTML = `<span>${model.name}</span>`;
-                    item.onclick = () => selectModel(model.name);
+                    
+                    item.innerHTML = `
+                        <span style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;" onclick="selectModel('${model.name}')">
+                            ${escapeHTML(displayName)} ${nicknames[model.name] ? `<span style="font-size:10px; color:#888;">(${model.name})</span>` : ''}
+                        </span>
+                        <div class="model-picker-actions">
+                            <button class="model-action-btn ${isPinned ? 'pinned' : ''}" title="${isPinned ? 'Unpin Model' : 'Pin Model'}" onclick="togglePinModel('${model.name}')">
+                                <svg viewBox="0 0 24 24"><path d="M16 12V4H17V2H7V4H8V12L6 14V16H11.2V22H12.8V16H18V14L16 12Z"/></svg>
+                            </button>
+                            <button class="model-action-btn" title="Model Options" onclick="openModelOptionsModal('${model.name}')">
+                                <svg viewBox="0 0 24 24"><path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z"/></svg>
+                            </button>
+                        </div>
+                    `;
                     listEl.appendChild(item);
                 });
 
-                if (!currentModel && data.models.length > 0) {
-                    selectModel(data.models[0].name);
+                if (!currentModel && sortedModels.length > 0) {
+                    selectModel(sortedModels[0].name);
                 }
 
             } catch (err) {
@@ -848,7 +1263,8 @@
 
         function selectModel(modelName) {
             currentModel = modelName;
-            document.getElementById('modelNameLabel').textContent = modelName;
+            const nicknames = getNicknames();
+            document.getElementById('modelNameLabel').textContent = nicknames[modelName] || modelName;
             
             const chat = chats.find(c => c.id === currentChatId);
             if (chat) {
@@ -856,39 +1272,72 @@
                 saveChats();
             }
 
-            document.querySelectorAll('.model-picker-item').forEach(el => {
-                if (el.textContent.includes(modelName)) {
-                    el.classList.add('active');
-                } else {
-                    el.classList.remove('active');
-                }
-            });
+            loadModels();
             closeSettings();
+        }
+
+        function togglePinModel(modelName) {
+            let pinned = getPinnedModels();
+            if (pinned.includes(modelName)) {
+                pinned = pinned.filter(m => m !== modelName);
+            } else {
+                pinned.push(modelName);
+            }
+            localStorage.setItem(PINNED_KEY, JSON.stringify(pinned));
+            loadModels();
         }
 
         async function pullModel() {
             const host = await getHost();
             const modelName = document.getElementById('pullModelName').value.trim();
             const statusEl = document.getElementById('pullStatus');
+            const progressContainer = document.getElementById('pullProgressBarContainer');
+            const progressFill = document.getElementById('pullProgressBarFill');
             
             if (!modelName) return;
-            statusEl.textContent = `Requesting download for ${modelName}...`;
+            
+            statusEl.textContent = `Connecting to pull ${modelName}...`;
+            progressContainer.style.display = 'block';
+            progressFill.style.width = '2%';
 
             try {
                 const response = await fetch(`${host}/api/pull`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: modelName, stream: false })
+                    body: JSON.stringify({ name: modelName, stream: true })
                 });
                 
-                if (response.ok) {
-                    statusEl.textContent = `Successfully pulled ${modelName}!`;
-                    loadModels();
-                } else {
-                    statusEl.textContent = `Error pulling model.`;
+                if (!response.ok) throw new Error("Failed to initiate pull request");
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n').filter(Boolean);
+
+                    for (const line of lines) {
+                        const data = JSON.parse(line);
+                        if (data.status) {
+                            statusEl.textContent = data.status;
+                            if (data.completed && data.total) {
+                                const percent = Math.round((data.completed / data.total) * 100);
+                                progressFill.style.width = percent + '%';
+                                statusEl.textContent = `${data.status} (${percent}%)`;
+                            }
+                        }
+                    }
                 }
+
+                statusEl.textContent = `Successfully pulled ${modelName}!`;
+                progressFill.style.width = '100%';
+                loadModels();
             } catch (err) {
                 statusEl.textContent = `Failed: ${err.message}`;
+                progressContainer.style.display = 'none';
             }
         }
 
@@ -943,6 +1392,12 @@
             activeController = new AbortController();
             setGeneratingState(true);
 
+            const ramGb = parseInt(localStorage.getItem(RAM_LIMIT_KEY) || '-1', 10);
+            let numCtx = 4096;
+            if (ramGb > 0) {
+                numCtx = Math.max(1024, ramGb * 512); 
+            }
+
             try {
                 const response = await fetch(`${host}/api/chat`, {
                     method: 'POST',
@@ -950,7 +1405,10 @@
                     signal: activeController.signal,
                     body: JSON.stringify({
                         model: currentModel,
-                        messages: chat.messages.map(m => ({ role: m.role, content: m.content }))
+                        messages: chat.messages.map(m => ({ role: m.role, content: m.content })),
+                        options: {
+                            num_ctx: ramGb > 0 ? numCtx : undefined
+                        }
                     })
                 });
 
@@ -973,7 +1431,7 @@
                             const parsed = JSON.parse(line);
                             if (parsed.message && parsed.message.content) {
                                 fullResponse += parsed.message.content;
-                                msgElement.textContent = fullResponse;
+                                renderFormattedMessage(msgElement, fullResponse);
                                 msgElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                             }
                             if (parsed.done) {
@@ -1000,8 +1458,9 @@
 
             } catch (err) {
                 if (err.name === 'AbortError') {
-                    msgElement.textContent += '\n\n[Generation cancelled]';
-                    chat.messages.push({ role: 'assistant', content: msgElement.textContent, meta: 'Cancelled' });
+                    fullResponse += '\n\n[Generation cancelled]';
+                    renderFormattedMessage(msgElement, fullResponse);
+                    chat.messages.push({ role: 'assistant', content: fullResponse, meta: 'Cancelled' });
                     saveChats();
                 } else {
                     msgElement.textContent = `Error: ${err.message}`;
@@ -1013,6 +1472,48 @@
             }
         }
 
+        // Markdown Parser with Code Block Detection & Run Button Injection
+        function renderFormattedMessage(containerEl, rawText) {
+            containerEl.innerHTML = '';
+            
+            const parts = rawText.split(/(```[\s\S]*?```)/g);
+
+            parts.forEach(part => {
+                if (part.startsWith('```') && part.endsWith('```')) {
+                    const firstNewline = part.indexOf('\n');
+                    let lang = 'code';
+                    let codeContent = part.slice(3, -3);
+                    
+                    if (firstNewline !== -1) {
+                        lang = part.slice(3, firstNewline).trim();
+                        codeContent = part.slice(firstNewline + 1);
+                    }
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'code-block-container';
+
+                    const runBtn = document.createElement('button');
+                    runBtn.className = 'run-code-btn';
+                    runBtn.textContent = '▶ Run Code';
+                    const encodedCode = encodeURIComponent(codeContent);
+                    runBtn.onclick = () => openRunnerModal(decodeURIComponent(encodedCode));
+
+                    const pre = document.createElement('pre');
+                    const code = document.createElement('code');
+                    code.textContent = codeContent;
+                    pre.appendChild(code);
+
+                    wrapper.appendChild(runBtn);
+                    wrapper.appendChild(pre);
+                    containerEl.appendChild(wrapper);
+                } else if (part.length > 0) {
+                    const span = document.createElement('span');
+                    span.textContent = part;
+                    containerEl.appendChild(span);
+                }
+            });
+        }
+
         function appendMessage(text, sender, scroll = true, id = null, metaId = null) {
             const container = document.getElementById('chatMessages');
             
@@ -1022,7 +1523,13 @@
             const div = document.createElement('div');
             div.className = `message ${sender}`;
             if (id) div.id = id;
-            div.textContent = text;
+
+            if (sender === 'assistant') {
+                renderFormattedMessage(div, text);
+            } else {
+                div.textContent = text;
+            }
+
             wrapper.appendChild(div);
 
             if (sender === 'assistant') {
