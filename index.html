@@ -920,59 +920,82 @@
             });
         }
 
-        // Initialize Speech Recognition Setup
+        // Initialize Speech Recognition Setup with Desktop Wrapper Fallback
         const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (SpeechRecognitionAPI) {
-            recognition = new SpeechRecognitionAPI();
-            recognition.continuous = true;
-            recognition.interimResults = true;
-            recognition.lang = 'en-US';
+            try {
+                recognition = new SpeechRecognitionAPI();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
 
-            recognition.onresult = (event) => {
-                let transcript = '';
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    transcript += event.results[i][0].transcript;
-                }
-                const inputEl = document.getElementById('userInput');
-                if (event.results[event.results.length - 1].isFinal) {
-                    inputEl.value += (inputEl.value ? ' ' : '') + transcript.trim();
-                }
-            };
+                recognition.onresult = (event) => {
+                    let transcript = '';
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        transcript += event.results[i][0].transcript;
+                    }
+                    const inputEl = document.getElementById('userInput');
+                    if (event.results[event.results.length - 1].isFinal) {
+                        inputEl.value += (inputEl.value ? ' ' : '') + transcript.trim();
+                    }
+                };
 
-            recognition.onerror = (event) => {
-                console.error('Speech recognition error', event.error);
-            };
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error', event.error);
+                };
 
-            recognition.onend = () => {
-                if (isListening) {
-                    try { recognition.start(); } catch(e) {}
-                }
-            };
+                recognition.onend = () => {
+                    if (isListening) {
+                        try { recognition.start(); } catch(e) {}
+                    }
+                };
+            } catch(e) {
+                recognition = null;
+            }
         }
 
         async function toggleSpeechRecognition() {
-            if (!recognition) {
-                alert('Speech recognition is not supported in this browser.');
+            const micBtn = document.getElementById('micBtn');
+
+            // If running in a desktop .exe wrapper where SpeechRecognition or mic streams are blocked/unsupported
+            if (!recognition || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showOsDictationPrompt();
                 return;
             }
-            const micBtn = document.getElementById('micBtn');
+
             if (isListening) {
                 stopListeningState();
             } else {
                 try {
+                    // Test microphone stream permission hook
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
                     recognition.start();
-                    await startAudioAnalyser();
+                    await startAudioAnalyser(stream);
                     isListening = true;
                     micBtn.classList.add('listening');
                 } catch(e) {
                     stopListeningState();
+                    showOsDictationPrompt();
                 }
             }
         }
 
-        async function startAudioAnalyser() {
+        function showOsDictationPrompt() {
+            const inputEl = document.getElementById('userInput');
+            inputEl.placeholder = 'Tip: Press Windows Key + H to dictate text!';
+            inputEl.style.borderColor = '#2ecc71';
+            
+            setTimeout(() => {
+                inputEl.style.borderColor = '';
+                inputEl.placeholder = 'Type a message...';
+            }, 4500);
+
+            alert("Desktop wrapper security prevents direct browser mic streaming here.\n\nQuick Fix: Click inside any text box and press [Windows Key + H] to use built-in system voice typing!");
+        }
+
+        async function startAudioAnalyser(stream) {
             try {
-                microphoneStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                microphoneStream = stream;
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 const source = audioContext.createMediaStreamSource(microphoneStream);
                 analyser = audioContext.createAnalyser();
@@ -1054,7 +1077,6 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // Dynamically adapts host depending on who uses it, with zero hardcoded personal data
         function initHost() {
             const hostInput = document.getElementById('hostUrl');
             const savedHost = localStorage.getItem(HOST_STORAGE_KEY);
@@ -1062,7 +1084,6 @@
             if (savedHost) {
                 hostInput.value = savedHost;
             } else {
-                // Automatically defaults to standard local backend URL out of the box for whoever installs it
                 hostInput.value = 'http://localhost:11434';
             }
 
