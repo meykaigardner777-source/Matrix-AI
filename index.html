@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Matrix AI - AI Manager & Chat</title>
+    <title>Matrix AI - Kokoro TTS & Speech Rec</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ModelDeck">
     
+    <!-- Kokoro-JS & ONNX Runtime Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/kokoro-js@latest/dist/kokoro.min.js"></script>
+
     <style>
         * {
             box-sizing: border-box;
@@ -430,7 +434,7 @@
         .send-button { background-color: rgba(30, 150, 70, 0.9); padding: 0 16px; }
         .send-button:hover { background-color: rgba(40, 160, 80, 1); }
 
-        /* Mic Button Styled for Local Hardware Audio Recording */
+        /* Mic Button Styled for webkitSpeechRecognition */
         .mic-button {
             background: rgba(255, 255, 255, 0.08);
             color: #ffffff;
@@ -459,6 +463,12 @@
             color: #ffffff;
             border-color: rgba(255, 107, 107, 0.8);
             box-shadow: 0 0 12px rgba(255, 107, 107, 0.6);
+            animation: pulse-mic 1.5s infinite;
+        }
+        @keyframes pulse-mic {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
         }
 
         .cancel-button { background-color: rgba(200, 50, 50, 0.9); padding: 0 16px; display: none; }
@@ -753,6 +763,22 @@
                 </div>
             </div>
 
+            <!-- Kokoro TTS Voice Settings -->
+            <div class="settings-group">
+                <label class="settings-label">Kokoro Neural Voice (TTS)</label>
+                <select id="kokoroVoiceSelect" class="settings-select">
+                    <option value="af_heart" selected>af_heart (American Female)</option>
+                    <option value="af_bella">af_bella (American Female)</option>
+                    <option value="af_nicole">af_nicole (American Female)</option>
+                    <option value="af_aoede">af_aoede (American Female)</option>
+                    <option value="am_michael">am_michael (American Male)</option>
+                    <option value="am_fenrir">am_fenrir (American Male)</option>
+                    <option value="bf_emma">bf_emma (British Female)</option>
+                    <option value="bm_george">bm_george (British Male)</option>
+                </select>
+                <div class="status-text" id="kokoroStatus">Kokoro WASM model ready on demand.</div>
+            </div>
+
             <div class="settings-group">
                 <label class="settings-label">Backend Host (Ollama / Cloud Tunnel)</label>
                 <input type="text" id="hostUrl" class="settings-input" placeholder="http://localhost:11434" onchange="saveHostAndReload()" />
@@ -873,16 +899,16 @@
 
             <div class="chat-messages" id="chatMessages">
                 <div class="message-wrapper assistant">
-                    <div class="message assistant">Hello! Open the **Settings** menu above to configure your local Ollama connection, manage models, and view live hardware system stats. Tap the microphone to record audio.</div>
+                    <div class="message assistant">Hello! Open the **Settings** menu above to configure your local Ollama connection, manage models, and view live hardware system stats. Tap the microphone for `webkitSpeechRecognition` audio input.</div>
                     <div class="message-toolbar">
-                        <button class="speak-msg-btn" onclick="speakText(this)">🔊 Read Aloud</button>
+                        <button class="speak-msg-btn" onclick="speakText(this)">🔊 Read Aloud (Kokoro)</button>
                     </div>
                 </div>
             </div>
 
             <div class="chat-input-area">
-                <textarea id="userInput" placeholder="Type a message..." onkeydown="handleKey(event)"></textarea>
-                <button id="micBtn" class="mic-button" onclick="toggleVoiceRecording()" title="Audio Recording">
+                <textarea id="userInput" placeholder="Type a message or speak into mic..." onkeydown="handleKey(event)"></textarea>
+                <button id="micBtn" class="mic-button" onclick="toggleVoiceRecognition()" title="Voice Dictation (Speech Recognition)">
                     <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
                 </button>
                 <button id="sendBtn" class="send-button" onclick="sendMessage()">Send</button>
@@ -906,10 +932,13 @@
         let editingModelName = null;
         let statsInterval = null;
 
-        // Native MediaRecorder Variables for Standalone .exe App Compatibility
-        let mediaRecorder = null;
-        let audioChunks = [];
-        let isRecording = false;
+        // Kokoro TTS Instance
+        let kokoroInstance = null;
+        let kokoroLoading = false;
+
+        // webkitSpeechRecognition Instance
+        let recognition = null;
+        let isRecognizing = false;
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -917,57 +946,111 @@
             });
         }
 
-        async function toggleVoiceRecording() {
-            const micBtn = document.getElementById('micBtn');
-            const inputEl = document.getElementById('userInput');
+        // --- Webkit Speech Recognition Engine ---
+        function initSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                return null;
+            }
+            const rec = new SpeechRecognition();
+            rec.continuous = false;
+            rec.interimResults = true;
+            rec.lang = 'en-US';
 
-            if (!isRecording) {
+            rec.onstart = () => {
+                isRecognizing = true;
+                document.getElementById('micBtn').classList.add('listening');
+            };
+
+            rec.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                const inputEl = document.getElementById('userInput');
+                if (finalTranscript) {
+                    inputEl.value = finalTranscript;
+                } else if (interimTranscript) {
+                    inputEl.value = interimTranscript;
+                }
+            };
+
+            rec.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                stopRecognitionState();
+            };
+
+            rec.onend = () => {
+                stopRecognitionState();
+            };
+
+            return rec;
+        }
+
+        function toggleVoiceRecognition() {
+            if (!recognition) {
+                recognition = initSpeechRecognition();
+                if (!recognition) {
+                    alert('webkitSpeechRecognition is not supported in this browser environment.');
+                    return;
+                }
+            }
+
+            if (!isRecognizing) {
                 try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
-
-                    mediaRecorder.ondataavailable = (event) => {
-                        audioChunks.push(event.data);
-                    };
-
-                    mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                        inputEl.value = "[Audio recorded successfully]";
-                        stream.getTracks().forEach(track => track.stop());
-                    };
-
-                    mediaRecorder.start();
-                    isRecording = true;
-                    micBtn.classList.add('listening');
-                } catch (err) {
-                    console.error('Microphone error:', err);
-                    alert('Could not access microphone hardware.');
-                    stopRecordingState();
+                    recognition.start();
+                } catch (e) {
+                    console.error(e);
+                    stopRecognitionState();
                 }
             } else {
-                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                    mediaRecorder.stop();
-                }
-                stopRecordingState();
+                recognition.stop();
+                stopRecognitionState();
             }
         }
 
-        function stopRecordingState() {
-            isRecording = false;
+        function stopRecognitionState() {
+            isRecognizing = false;
             const micBtn = document.getElementById('micBtn');
             micBtn.classList.remove('listening');
         }
 
-        // Updated Text-to-Speech tuned to target Built-in OS "Natural" Neural Voices smoothly
-        function speakText(buttonEl) {
-            if (!('speechSynthesis' in window)) {
-                alert('Text-to-speech not supported in this runtime environment.');
-                return;
+        // --- Kokoro TTS Engine Integration ---
+        async function getKokoroInstance() {
+            if (kokoroInstance) return kokoroInstance;
+            if (kokoroLoading) {
+                // Wait while loading
+                while (kokoroLoading) {
+                    await new Promise(r => setTimeout(r, 200));
+                }
+                return kokoroInstance;
             }
 
-            window.speechSynthesis.cancel();
+            kokoroLoading = true;
+            const statusEl = document.getElementById('kokoroStatus');
+            if (statusEl) statusEl.textContent = 'Loading Kokoro TTS WASM model...';
 
+            try {
+                // Initialize Kokoro TTS with quantization for high performance browser PWA runtime
+                kokoroInstance = await KokoroTTS.from_pretrained("onnx-community/Kokoro-82M-v1.0-ONNX", {
+                    dtype: "q8"
+                });
+                if (statusEl) statusEl.textContent = 'Kokoro TTS Model Loaded Successfully!';
+            } catch (err) {
+                console.error('Failed to load Kokoro TTS:', err);
+                if (statusEl) statusEl.textContent = 'Failed to load Kokoro WASM model.';
+            } finally {
+                kokoroLoading = false;
+            }
+            return kokoroInstance;
+        }
+
+        async function speakText(buttonEl) {
             const wrapper = buttonEl.closest('.message-wrapper');
             const msgDiv = wrapper ? wrapper.querySelector('.message.assistant') : null;
             if (!msgDiv) return;
@@ -975,48 +1058,34 @@
             const textToSpeak = msgDiv.innerText;
             if (!textToSpeak.trim()) return;
 
-            const utterance = new SpeechSynthesisUtterance(textToSpeak);
-            utterance.rate = 1.0; 
-            utterance.pitch = 1.0;
+            buttonEl.textContent = '⏳ Loading TTS...';
+            buttonEl.disabled = true;
 
-            const voices = window.speechSynthesis.getVoices();
-            
-            const naturalVoice = voices.find(v => 
-                (v.name.includes('Natural') || v.name.includes('Online (Natural)') || v.name.includes('Google US English')) && v.lang.startsWith('en')
-            ) || voices.find(v => v.lang.startsWith('en')) || voices[0];
+            try {
+                const tts = await getKokoroInstance();
+                if (!tts) throw new Error('TTS instance unavailable');
 
-            if (naturalVoice) {
-                utterance.voice = naturalVoice;
+                const voiceSelect = document.getElementById('kokoroVoiceSelect');
+                const selectedVoice = voiceSelect ? voiceSelect.value : 'af_heart';
+
+                buttonEl.textContent = '🔊 Generating audio...';
+                const audio = await tts.generate(textToSpeak, {
+                    voice: selectedVoice
+                });
+
+                buttonEl.textContent = '▶ Playing Audio...';
+                await audio.play();
+
+                buttonEl.textContent = '🔊 Read Aloud (Kokoro)';
+                buttonEl.disabled = false;
+            } catch (err) {
+                console.error('Kokoro synthesis error:', err);
+                buttonEl.textContent = '❌ Error';
+                setTimeout(() => {
+                    buttonEl.textContent = '🔊 Read Aloud (Kokoro)';
+                    buttonEl.disabled = false;
+                }, 2000);
             }
-
-            buttonEl.textContent = '⏹ Stop';
-            const restoreButton = () => {
-                buttonEl.textContent = '🔊 Read Aloud';
-                buttonEl.onclick = () => speakText(buttonEl);
-            };
-
-            buttonEl.onclick = () => {
-                window.speechSynthesis.cancel();
-                restoreButton();
-            };
-
-            utterance.onend = restoreButton;
-            utterance.onerror = restoreButton;
-
-            window.speechSynthesis.speak(utterance);
-
-            const safetyCheck = setInterval(() => {
-                if (!window.speechSynthesis.speaking) {
-                    clearInterval(safetyCheck);
-                    restoreButton();
-                }
-            }, 600);
-        }
-
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = () => {
-                window.speechSynthesis.getVoices();
-            };
         }
 
         function initHost() {
@@ -1633,7 +1702,7 @@
             if (sender === 'assistant') {
                 const toolbar = document.createElement('div');
                 toolbar.className = 'message-toolbar';
-                toolbar.innerHTML = `<button class="speak-msg-btn" onclick="speakText(this)">🔊 Read Aloud</button>`;
+                toolbar.innerHTML = `<button class="speak-msg-btn" onclick="speakText(this)">🔊 Read Aloud (Kokoro)</button>`;
                 wrapper.appendChild(toolbar);
 
                 const meta = document.createElement('div');
