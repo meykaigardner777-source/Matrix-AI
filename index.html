@@ -4,15 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- Permissive CSP for Packaged Electron .exe & Model Downloads -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https: http:; connect-src * 'self' https: http: ws: wss: data: blob:; worker-src * 'self' blob: data:; script-src * 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https:; img-src * data: blob: https: http:; style-src * 'self' 'unsafe-inline';">
+    <!-- Hardened, Explicit Content-Security-Policy (Eliminates Chrome/Defender Heuristic Red Flags & Packaging Crashes) -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self' https: http:;
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://cdn.jsdelivr.net;
+        connect-src 'self' https: http: ws: wss: blob: data: https://huggingface.co https://*.huggingface.co https://cdn.jsdelivr.net;
+        worker-src 'self' blob: data:;
+        img-src 'self' data: blob: https: http:;
+        style-src 'self' 'unsafe-inline';
+        font-src 'self' data: https:;
+        frame-src blob: data: 'self';
+    ">
 
-    <title>Matrix AI - AI Manager & Chat</title>
-    <link rel="manifest" href="manifest.json">
+    <title>Matrix AI - Neural AI Hub & Manager</title>
     <meta name="theme-color" content="#080808">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="ModelDeck">
+    <meta name="apple-mobile-web-app-title" content="Matrix AI">
     
     <!-- Client-Side Neural Whisper STT & MMS/VITS Neural TTS Engine -->
     <script type="module">
@@ -22,7 +30,7 @@
         env.remoteHost = 'https://huggingface.co';
         env.remotePathTemplate = '{model}/resolve/{revision}/';
 
-        // Critical Electron fix: disable worker proxying to avoid file:// origin crash
+        // Critical Electron & Packaged exe fix: disable worker proxying to avoid file:// origin crashes
         if (env.backends && env.backends.onnx && env.backends.onnx.wasm) {
             env.backends.onnx.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/';
             env.backends.onnx.wasm.proxy = false;
@@ -64,8 +72,43 @@
             --accent-green: rgba(16, 120, 50, 0.95);
         }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.3); border-radius: 4px; transition: background 0.2s; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(128, 128, 128, 0.5); }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            min-height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            position: relative;
+            transition: background-color 0.3s, color 0.3s;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+        }
+
         /* ------------------------------------------------------------- */
-        /* ANIMATION PRESETS                                             */
+        /* ANIMATION PRESETS & KEYFRAMES (CENTER-TRANSLATE PRESERVED)    */
         /* ------------------------------------------------------------- */
         body.anim-preset-minimal {
             --anim-speed-base: 0.18s;
@@ -120,8 +163,8 @@
         }
 
         @keyframes minimalModalScale {
-            0% { opacity: 0; transform: scale(calc(1 - (0.10 * var(--anim-intensity, 1)))); }
-            100% { opacity: 1; transform: scale(1); }
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(calc(1 - (0.10 * var(--anim-intensity, 1)))); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
         body.anim-preset-smooth {
@@ -154,9 +197,9 @@
         }
 
         @keyframes islandExpand {
-            0% { opacity: 0; transform: scale(calc(1 - (0.3 * var(--anim-intensity, 1))), calc(1 - (0.5 * var(--anim-intensity, 1)))); border-radius: 40px; }
-            55% { opacity: 1; transform: scale(calc(1 + (0.04 * var(--anim-intensity, 1))), calc(1 + (0.02 * var(--anim-intensity, 1)))); border-radius: 16px; }
-            100% { opacity: 1; transform: scale(1, 1); border-radius: 14px; }
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(calc(1 - (0.3 * var(--anim-intensity, 1))), calc(1 - (0.5 * var(--anim-intensity, 1)))); border-radius: 40px; }
+            55% { opacity: 1; transform: translate(-50%, -50%) scale(calc(1 + (0.04 * var(--anim-intensity, 1))), calc(1 + (0.02 * var(--anim-intensity, 1)))); border-radius: 16px; }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1, 1); border-radius: 14px; }
         }
 
         body.anim-preset-matrix {
@@ -196,42 +239,17 @@
             animation: messagePop var(--anim-speed) steps(5, end) forwards !important;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.3); border-radius: 4px; transition: background 0.2s; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(128, 128, 128, 0.5); }
-
-        html, body {
-            width: 100%;
-            height: 100dvh;
-            overflow: hidden;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            position: fixed;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        #matrix {
+        /* ------------------------------------------------------------- */
+        /* EXACT CENTER-ANCHORED MODALS (FIXES ELECTRON PACKAGED DRIFT)   */
+        /* ------------------------------------------------------------- */
+        .sidebar-overlay {
             position: fixed;
             top: 0;
             left: 0;
+            right: 0;
+            bottom: 0;
             width: 100vw;
-            height: 100dvh;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .sidebar-overlay {
-            position: fixed;
-            inset: 0;
+            height: 100vh;
             background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(4px);
             z-index: 90;
@@ -243,11 +261,11 @@
 
         .sidebar {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 93vw;
-            max-width: 600px;
-            height: 85dvh;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) scale(0.90) !important;
+            width: min(93vw, 600px);
+            height: min(85vh, 85dvh);
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 14px;
@@ -256,13 +274,24 @@
             flex-direction: column;
             gap: 14px;
             z-index: 100;
-            transform: translate(-50%, -50%) scale(0.88);
             opacity: 0;
             pointer-events: none;
             transition: transform var(--anim-speed) var(--anim-ease), opacity var(--anim-speed) var(--anim-ease);
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75);
+            margin: 0 !important;
         }
-        .sidebar.open { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
+        .sidebar.open {
+            transform: translate(-50%, -50%) scale(1) !important;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .settings-sidebar {
+            width: min(95vw, 900px);
+            height: min(88vh, 88dvh);
+            padding: 0;
+            overflow: hidden;
+        }
 
         .sidebar-header {
             display: flex;
@@ -366,9 +395,9 @@
         .delete-chat-btn svg { width: 16px; height: 16px; fill: currentColor; }
         .delete-chat-btn:hover { background: rgba(255, 255, 255, 0.15); color: #ff5c5c; transform: scale(1.12); }
 
-        /* Main Layout */
+        /* Main Viewport Container (Robust Flex Bounds) */
         .app-layout {
-            position: fixed;
+            position: absolute;
             top: max(env(safe-area-inset-top, 12px), 12px);
             left: max(env(safe-area-inset-left, 12px), 12px);
             right: max(env(safe-area-inset-right, 12px), 12px);
@@ -377,6 +406,8 @@
             flex-direction: column;
             gap: 10px;
             z-index: 10;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .chat-container {
@@ -403,6 +434,7 @@
             width: 100%;
             padding-bottom: 12px;
             border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
         }
 
         .menu-toggle-btn, .settings-toggle-btn {
@@ -640,6 +672,7 @@
             padding-top: 10px;
             border-top: 1px solid var(--border-color);
             position: relative;
+            flex-shrink: 0;
         }
 
         textarea {
@@ -733,17 +766,7 @@
 
         .cancel-button { background-color: rgba(217, 56, 56, 0.2); color: #ff5c5c; border-color: rgba(217, 56, 56, 0.5); padding: 0 16px; display: none; }
 
-        .settings-sidebar {
-            width: 95vw;
-            max-width: 900px;
-            height: 88dvh;
-            padding: 0;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            background: var(--panel-bg);
-        }
-
+        /* Settings Layout & Navigation */
         .settings-layout-body {
             display: flex;
             flex: 1;
@@ -856,7 +879,7 @@
             animation: pullErrorShake 0.45s ease-in-out;
         }
 
-        /* FLEXIBLE, ADAPTIVE 16-DIGIT PASSKEY CONTAINERS (NO SCROLL CLIPPING) */
+        /* 16-DIGIT PASSKEY CONTAINERS */
         .passkey-block-container {
             background: var(--input-bg);
             border: 1px solid var(--border-color);
@@ -1227,10 +1250,15 @@
         }
         @keyframes pullSpin { 100% { transform: rotate(360deg); } }
 
-        /* STRICTLY CENTERED & ROBUST MODAL OVERLAYS */
+        /* STRICT CENTER-ANCHORED MODAL OVERLAYS */
         .api-modal-overlay {
             position: fixed;
-            inset: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
             background: rgba(0, 0, 0, 0.78);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
@@ -1259,11 +1287,14 @@
             flex-direction: column;
             gap: 12px;
             box-shadow: 0 25px 60px rgba(0,0,0,0.7);
-            transform: scale(0.92);
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) scale(0.92) !important;
             transition: transform var(--anim-speed) var(--anim-ease);
-            margin: auto;
+            margin: 0 !important;
         }
-        .api-modal-overlay.active .api-modal { transform: scale(1); }
+        .api-modal-overlay.active .api-modal { transform: translate(-50%, -50%) scale(1) !important; }
 
         .api-modal-header {
             display: flex;
@@ -1286,26 +1317,29 @@
             word-break: break-all;
         }
 
-        /* FULLY RESPONSIVE & OVERFLOW-PROOF CODE RUNNER MODAL */
+        /* RESPONSIVE & SECURE CODE RUNNER MODAL */
         .runner-modal {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 14px;
             width: min(96vw, 1100px);
-            height: min(90dvh, 850px);
-            max-height: 92dvh;
+            height: min(90vh, 850px);
+            max-height: 92vh;
             padding: 12px 14px;
             display: flex;
             flex-direction: column;
             gap: 10px;
             box-shadow: 0 35px 85px rgba(0,0,0,0.85);
-            transform: scale(0.92);
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) scale(0.92) !important;
             transition: transform var(--anim-speed) var(--anim-ease);
-            margin: auto;
+            margin: 0 !important;
             box-sizing: border-box;
             overflow: hidden;
         }
-        .api-modal-overlay.active .runner-modal { transform: scale(1); }
+        .api-modal-overlay.active .runner-modal { transform: translate(-50%, -50%) scale(1) !important; }
 
         .runner-header {
             display: flex;
@@ -1474,7 +1508,7 @@
                     </div>
                 </div>
 
-                <!-- Pane 1b: Phone Sync (16-Digit Master Passkey) -->
+                <!-- Pane 2: Phone Sync (16-Digit Master Passkey) -->
                 <div id="pane-sync" class="settings-pane">
                     <div class="settings-pane-title">Phone Sync (16-Digit Master Passkey)</div>
                     
@@ -1516,7 +1550,7 @@
                     </div>
                 </div>
 
-                <!-- Pane 2: Themes & Motion -->
+                <!-- Pane 3: Themes & Motion -->
                 <div id="pane-themes" class="settings-pane">
                     <div class="settings-pane-title">Themes & Dynamic Motion</div>
                     
@@ -1599,7 +1633,7 @@
                     </div>
                 </div>
 
-                <!-- Pane 3: Hardware & Memory -->
+                <!-- Pane 4: Hardware & Memory -->
                 <div id="pane-hardware" class="settings-pane">
                     <div class="settings-pane-title">Hardware Telemetry & Memory</div>
                     <div class="settings-group">
@@ -1658,7 +1692,7 @@
                     </div>
                 </div>
 
-                <!-- Pane 4: Installed Models -->
+                <!-- Pane 5: Model Management -->
                 <div id="pane-models" class="settings-pane">
                     <div class="settings-pane-title">Model Management & Puller</div>
                     <div class="settings-group">
@@ -1682,7 +1716,7 @@
                     </div>
                 </div>
 
-                <!-- Pane 5: Voice & Audio (MMS / VITS Neural TTS + Whisper) -->
+                <!-- Pane 6: Voice & Audio (MMS / VITS Neural TTS + Whisper) -->
                 <div id="pane-voice" class="settings-pane">
                     <div class="settings-pane-title">Speech Synthesis & Recognition</div>
                     
@@ -1733,7 +1767,7 @@
                     </div>
                 </div>
 
-                <!-- Pane 6: API Integration -->
+                <!-- Pane 7: API Integration -->
                 <div id="pane-api" class="settings-pane">
                     <div class="settings-pane-title">Third-Party App API</div>
                     <div class="settings-group">
@@ -1773,7 +1807,7 @@
         </div>
     </div>
 
-    <!-- FULLY ADAPTIVE & OVERFLOW-PROOF INTERACTIVE CODE RUNNER MODAL -->
+    <!-- CODE RUNNER SANDBOX MODAL -->
     <div id="runnerModalOverlay" class="api-modal-overlay" onclick="closeRunnerModal()">
         <div class="runner-modal" onclick="event.stopPropagation()">
             <div class="runner-header">
@@ -1790,13 +1824,13 @@
                 </div>
                 <div class="runner-pane">
                     <span class="pane-label">Live Preview Sandbox</span>
-                    <iframe id="runnerPreviewFrame" class="preview-frame" sandbox="allow-scripts allow-modals allow-same-origin"></iframe>
+                    <iframe id="runnerPreviewFrame" class="preview-frame" sandbox="allow-scripts allow-forms"></iframe>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Main View -->
+    <!-- Main App Layout Viewport -->
     <div class="app-layout">
         <main class="chat-container">
             <div class="chat-header">
@@ -1853,7 +1887,6 @@
         let currentChatId = null;
         let currentModel = null;
         let activeController = null;
-        let activePreviewBlobUrl = null;
         let editingModelName = null;
         let statsInterval = null;
         let animFrameId = null;
@@ -1880,12 +1913,6 @@
         let nativeSpeechRecognizer = null;
         let nativeRecognizedText = '';
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW registration failed: ', err));
-            });
-        }
-
         /* ------------------------------------------------------------- */
         /* NETWORK DIAGNOSTICS & HUB ACCESS TEST                         */
         /* ------------------------------------------------------------- */
@@ -1897,12 +1924,12 @@
                 const res = await fetch('https://huggingface.co/Xenova/whisper-tiny.en/resolve/main/config.json', { method: 'GET', cache: 'no-cache' });
                 const dur = Date.now() - start;
                 if (res.ok) {
-                    statusEl.innerHTML = `<span style="color:#27ae60; font-weight:bold;">✓ Online & Connected</span> — Hub ping: ${dur}ms. Ready to download weights.`;
+                    statusEl.innerHTML = `<span style="color:#27ae60; font-weight:bold;">✓ Online & Connected</span> — Ping: ${dur}ms. Ready to download weights.`;
                 } else {
                     statusEl.innerHTML = `<span style="color:#ff5c5c;">⚠️ Hub returned HTTP ${res.status}.</span>`;
                 }
             } catch (err) {
-                statusEl.innerHTML = `<span style="color:#ff5c5c; font-weight:bold;">✕ Connection Blocked:</span> ${err.message || 'Network error'}. Check firewall or CSP.`;
+                statusEl.innerHTML = `<span style="color:#ff5c5c; font-weight:bold;">✕ Connection Blocked:</span> ${err.message || 'Network error'}. Check firewall or connection.`;
             }
         }
 
@@ -2159,7 +2186,9 @@
 
                 if (!output || !output.audio) throw new Error('TTS returned empty audio');
 
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                const audioCtx = new AudioCtx();
+                if (audioCtx.state === 'suspended') await audioCtx.resume();
                 activeTtsAudioContext = audioCtx;
 
                 const sampleRate = output.sampling_rate || 16000;
@@ -2320,6 +2349,7 @@
 
                     const AudioCtx = window.AudioContext || window.webkitAudioContext;
                     voiceAudioContext = new AudioCtx();
+                    if (voiceAudioContext.state === 'suspended') await voiceAudioContext.resume();
 
                     voiceAnalyser = voiceAudioContext.createAnalyser();
                     voiceAnalyser.fftSize = 256;
@@ -2508,7 +2538,7 @@
 
             const savedRam = localStorage.getItem(RAM_LIMIT_KEY) || '-1';
             const ramLabels = {'4':'4 GB VRAM / RAM Target','6':'6 GB VRAM / RAM Target','8':'8 GB VRAM / RAM Target','12':'12 GB VRAM / RAM Target','16':'16 GB VRAM / RAM Target','-1':'Full Offload / Unlimited'};
-            document.getElementById('ramLimitText').textContent = ramLabels[savedRam];
+            document.getElementById('ramLimitText').textContent = ramLabels[savedRam] || 'Full Offload / Unlimited';
 
             const savedCtx = localStorage.getItem(CONTEXT_SIZE_KEY) || '4096';
             const ctxLabels = {'1024':'1024 Tokens (Lightning Fast)','2048':'2048 Tokens (Fast & Balanced)','4096':'4096 Tokens (Standard)','8192':'8192 Tokens (Large Context)','16384':'16384 Tokens (Extended)'};
@@ -2805,7 +2835,7 @@
         }
 
         /* ------------------------------------------------------------- */
-        /* ROBUST INTERACTIVE CODE RUNNER SANDBOX                        */
+        /* CODE RUNNER SANDBOX (SAFE SRCDOC ISOLATION)                   */
         /* ------------------------------------------------------------- */
         function openRunnerModal(code) {
             document.getElementById('runnerCodeEditor').value = code;
@@ -2814,18 +2844,17 @@
         }
         function closeRunnerModal() {
             document.getElementById('runnerModalOverlay').classList.remove('active');
-            if (activePreviewBlobUrl) { URL.revokeObjectURL(activePreviewBlobUrl); activePreviewBlobUrl = null; }
         }
-        function runEditableCode() { renderPreview(document.getElementById('runnerCodeEditor').value); }
+        function runEditableCode() { 
+            renderPreview(document.getElementById('runnerCodeEditor').value); 
+        }
 
         function renderPreview(code) {
             const frame = document.getElementById('runnerPreviewFrame');
-            if (activePreviewBlobUrl) { URL.revokeObjectURL(activePreviewBlobUrl); activePreviewBlobUrl = null; }
             let html = (!code.toLowerCase().includes('<!doctype') && !code.toLowerCase().includes('<html>'))
                 ? `<!DOCTYPE html><html><head><style>body{font-family:system-ui,sans-serif;padding:16px;background:#0c0c0c;color:#ffffff;margin:0;}h3{color:#fff;font-size:13px;border-bottom:1px solid #333;padding-bottom:6px;margin-top:0;}#out{white-space:pre-wrap;font-family:monospace;font-size:13px;color:#cccccc;line-height:1.5;}</style></head><body><h3>Console & Render Output</h3><div id="out"></div><script>const log=console.log;const o=document.getElementById('out');console.log=(...a)=>{log(...a);o.textContent+=a.map(x=>typeof x==='object'?JSON.stringify(x,null,2):x).join(' ')+'\\n';};try{${code}}catch(e){o.style.color='#ff6b6b';o.textContent+='Error: '+e.message;}<\\/script></body></html>`
                 : code;
-            activePreviewBlobUrl = URL.createObjectURL(new Blob([html], {type: 'text/html'}));
-            frame.src = activePreviewBlobUrl;
+            frame.srcdoc = html;
         }
 
         async function updateApiDocsEndpoint() {
@@ -2877,7 +2906,7 @@
                 statusEl.innerHTML = `<span id="settingsStatusDot" class="status-dot connected"></span> Status: Online & Connected`;
                 setConnectedStatus(true);
                 listEl.innerHTML = '';
-                if (data.models.length === 0) { listEl.innerHTML = '<div class="model-picker-item">No models installed.</div>'; return; }
+                if (!data.models || data.models.length === 0) { listEl.innerHTML = '<div class="model-picker-item">No models installed.</div>'; return; }
 
                 const nicknames = getNicknames(), pinnedSet = new Set(getPinnedModels());
                 const sorted = [...data.models].sort((a,b) => (pinnedSet.has(b.name)?1:0)-(pinnedSet.has(a.name)?1:0));
@@ -2952,10 +2981,17 @@
                 if (!res.ok) throw new Error('Network response not ok: ' + res.status);
                 
                 const reader = res.body.getReader(), decoder = new TextDecoder();
+                let streamBuffer = '';
+
                 while (true) {
                     const {value, done} = await reader.read();
                     if (done) break;
-                    for (const line of decoder.decode(value, {stream:true}).split('\n').filter(Boolean)) {
+                    streamBuffer += decoder.decode(value, {stream:true});
+                    const lines = streamBuffer.split('\n');
+                    streamBuffer = lines.pop();
+
+                    for (const line of lines) {
+                        if (!line.trim()) continue;
                         const data = JSON.parse(line);
                         if (data.error) throw new Error(data.error);
                         if (data.status) {
@@ -3043,11 +3079,17 @@
                 });
                 if (!res.ok) throw new Error();
                 const reader = res.body.getReader(), decoder = new TextDecoder();
-                let full = '', count = 0, dur = 0;
+                let full = '', count = 0, dur = 0, streamBuffer = '';
+
                 while (true) {
                     const {value, done} = await reader.read();
                     if (done) break;
-                    for (const line of decoder.decode(value, {stream:true}).split('\n').filter(Boolean)) {
+                    streamBuffer += decoder.decode(value, {stream:true});
+                    const lines = streamBuffer.split('\n');
+                    streamBuffer = lines.pop();
+
+                    for (const line of lines) {
+                        if (!line.trim()) continue;
                         const parsed = JSON.parse(line);
                         if (parsed.message?.content) {
                             full += parsed.message.content;
@@ -3067,7 +3109,7 @@
                     renderFormattedMessage(msgEl, full);
                     chat.messages.push({role: 'assistant', content: full, meta: 'Cancelled'});
                     saveChats();
-                } else { msgEl.textContent = 'Generation error.'; }
+                } else { msgEl.textContent = 'Generation error. Verify backend connection.'; }
             } finally {
                 activeController = null;
                 setGeneratingState(false);
