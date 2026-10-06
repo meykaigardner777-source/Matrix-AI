@@ -33,7 +33,9 @@
             --input-bg: #1c1c1c;
             --msg-user-bg: rgba(34, 34, 34, 0.70);
             --msg-assistant-bg: rgba(20, 20, 20, 0.70);
-            --accent-green: rgba(30, 150, 70, 0.9);
+            --accent-green: rgba(255, 255, 255, 0.9);
+            --crimson-accent: #ff1e44;
+            --crimson-glow: rgba(255, 30, 68, 0.65);
             --anim-multiplier: 1;
             --anim-intensity: 1;
             --anim-speed-base: 0.38s;
@@ -51,7 +53,9 @@
             --input-bg: #ebebeb;
             --msg-user-bg: rgba(225, 225, 225, 0.75);
             --msg-assistant-bg: rgba(240, 240, 240, 0.75);
-            --accent-green: rgba(16, 120, 50, 0.95);
+            --accent-green: rgba(0, 0, 0, 0.95);
+            --crimson-accent: #d90429;
+            --crimson-glow: rgba(217, 4, 41, 0.45);
         }
 
         * {
@@ -354,7 +358,7 @@
         }
         body.theme-light .delete-chat-btn { color: rgba(0, 0, 0, 0.6); }
         .delete-chat-btn svg { width: 16px; height: 16px; fill: currentColor; }
-        .delete-chat-btn:hover { background: rgba(255, 255, 255, 0.15); color: #ff5c5c; transform: scale(1.12); }
+        .delete-chat-btn:hover { background: rgba(255, 255, 255, 0.15); color: #ffffff; transform: scale(1.12); }
 
         /* Main Viewport Container */
         .app-layout {
@@ -448,13 +452,13 @@
             flex-shrink: 0;
         }
         .status-dot.connected {
-            background-color: #27ae60;
-            box-shadow: 0 0 10px rgba(39, 174, 96, 0.8);
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
             animation: dotPulse 2s infinite ease-in-out;
         }
         @keyframes dotPulse {
             0%, 100% { opacity: 0.9; }
-            50% { opacity: 1; box-shadow: 0 0 14px rgba(39, 174, 96, 1); }
+            50% { opacity: 1; box-shadow: 0 0 14px rgba(255, 255, 255, 1); }
         }
 
         .stats-grid {
@@ -858,10 +862,10 @@
         }
 
         .mic-button.error {
-            border-color: #d93838 !important;
-            color: #ff5c5c !important;
-            background: rgba(217, 56, 56, 0.2) !important;
-            box-shadow: 0 0 18px rgba(217, 56, 56, 0.85) !important;
+            border-color: #ffffff !important;
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.6) !important;
         }
 
         .mic-button.transcribing {
@@ -872,7 +876,7 @@
             cursor: wait;
         }
 
-        .cancel-button { background-color: rgba(217, 56, 56, 0.2); color: #ff5c5c; border-color: rgba(217, 56, 56, 0.5); padding: 0 14px; display: none; }
+        .cancel-button { background-color: rgba(255, 255, 255, 0.1); color: #ffffff; border-color: rgba(255, 255, 255, 0.4); padding: 0 14px; display: none; }
 
         /* TOGGLE SWITCH COMPONENT */
         .toggle-row {
@@ -920,9 +924,7 @@
             background-color: var(--panel-bg);
         }
 
-        /* ------------------------------------------------------------- */
-        /* RESPONSIVE 80% BY 80% SCREEN NEURAL STAGE MODAL               */
-        /* ------------------------------------------------------------- */
+        /* DEDICATED 80% BY 80% SCREEN NEURAL STAGE MODAL */
         .dedicated-neural-stage-modal {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -968,6 +970,48 @@
             display: flex;
             gap: 6px;
             z-index: 10;
+        }
+
+        /* ZOOM HUD CONTROLS (0.5x to 100x) */
+        .zoom-hud-controls {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 3px 6px;
+            z-index: 10;
+            backdrop-filter: blur(8px);
+        }
+        .zoom-hud-btn {
+            background: rgba(255, 255, 255, 0.12);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.15s;
+        }
+        .zoom-hud-btn:hover { background: rgba(255, 255, 255, 0.25); transform: scale(1.08); }
+        .zoom-display-badge {
+            font-family: monospace;
+            font-size: 11px;
+            font-weight: bold;
+            color: var(--text-color);
+            padding: 0 6px;
+            user-select: none;
+            min-width: 58px;
+            text-align: center;
         }
 
         /* MODALS & POPUPS BASE */
@@ -1023,9 +1067,7 @@
             gap: 8px;
         }
 
-        /* ------------------------------------------------------------- */
-        /* MODELS HUB MODAL & INTERNAL CONTAINERS (OVERFLOW-SAFE)        */
-        /* ------------------------------------------------------------- */
+        /* MODELS HUB MODAL */
         .models-hub-modal {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -1087,7 +1129,7 @@
         }
 
         .neural-canvas-container {
-            height: clamp(130px, 24dvh, 210px);
+            height: clamp(160px, 28dvh, 240px);
             width: 100%;
             background: #050505;
             border: 1px dashed var(--border-color);
@@ -1228,6 +1270,88 @@
         .model-action-btn:hover { opacity: 1; background: rgba(128, 128, 128, 0.25); border-color: var(--text-color); }
         .model-action-btn.pinned { background: rgba(128, 128, 128, 0.35); opacity: 1; }
 
+        /* TRAINING CONTAINER & LIVE STAGE VIEWPORT */
+        .training-container {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .trained-topics-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .trained-topic-chip {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .trained-topic-delete {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            padding: 0 2px;
+            display: flex;
+            align-items: center;
+        }
+        .trained-topic-delete:hover { color: #ffffff; }
+
+        .train-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0 14px;
+            height: 36px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .train-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: #ffffff;
+            transform: scale(1.02);
+        }
+        .train-btn.training {
+            background: #ffffff !important;
+            color: #000000 !important;
+            cursor: wait;
+        }
+
+        .training-preview-box {
+            position: relative;
+            width: 100%;
+            height: 140px;
+            background: #030303;
+            border: 1px dashed var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            display: none;
+            margin-top: 4px;
+        }
+        .training-preview-box.active {
+            display: block;
+        }
+
         .preview-desc-text {
             font-size: 11.5px;
             opacity: 0.75;
@@ -1365,8 +1489,8 @@
         }
         .settings-input:focus { border-color: var(--text-color); }
         .settings-input.input-error {
-            border-color: #d93838 !important;
-            box-shadow: 0 0 12px rgba(217, 56, 56, 0.6);
+            border-color: #ffffff !important;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
             animation: pullErrorShake 0.45s ease-in-out;
         }
 
@@ -1602,9 +1726,9 @@
         }
 
         .danger-button {
-            background: rgba(217, 56, 56, 0.15);
-            color: #ff5c5c;
-            border: 1px solid rgba(217, 56, 56, 0.4);
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 0 12px;
             font-size: 12px;
@@ -1616,7 +1740,7 @@
             align-items: center;
             justify-content: center;
         }
-        .danger-button:hover { background: rgba(217, 56, 56, 0.3); transform: scale(1.02); }
+        .danger-button:hover { background: rgba(255, 255, 255, 0.18); transform: scale(1.02); }
 
         .pull-model-btn {
             position: relative;
@@ -1637,15 +1761,15 @@
         }
 
         .pull-model-btn.success {
-            background-color: rgba(39, 174, 96, 0.8) !important;
+            background-color: rgba(255, 255, 255, 0.3) !important;
             color: #ffffff !important;
-            border: 1px solid #00ff66 !important;
+            border: 1px solid #ffffff !important;
         }
 
         .pull-model-btn.error {
-            background-color: #d93838 !important;
+            background-color: rgba(255, 255, 255, 0.1) !important;
             color: #ffffff !important;
-            border: 1px solid #ff4d4d !important;
+            border: 1px solid #ffffff !important;
             animation: pullErrorShake 0.45s ease-in-out;
         }
         @keyframes pullErrorShake {
@@ -2185,7 +2309,7 @@
         </div>
     </aside>
 
-    <!-- DEDICATED MODELS HUB & NEURAL VISUALIZER MODAL (RESPONSIVE & OVERFLOW-SAFE) -->
+    <!-- DEDICATED MODELS HUB & NEURAL VISUALIZER MODAL -->
     <div id="modelsHubOverlay" class="api-modal-overlay" onclick="closeModelsHubModal()">
         <div class="models-hub-modal" onclick="event.stopPropagation()">
             <div class="sidebar-header">
@@ -2204,10 +2328,20 @@
                     </div>
                     <div class="neural-canvas-container" id="hubCanvasContainer">
                         <canvas id="modelInspectorCanvas" class="neural-viewport-canvas"></canvas>
+                        
                         <div class="neural-telemetry-badge">
                             <span class="status-dot connected" style="width: 5px; height: 5px;"></span>
                             <span id="hubTelemetryState">TOPOLOGY: ROTATING</span>
                         </div>
+
+                        <!-- ZOOM CONTROLS (0.5x - 100x) -->
+                        <div class="zoom-hud-controls">
+                            <button class="zoom-hud-btn" onclick="adjustHubZoom(-1.5)" title="Zoom Out">-</button>
+                            <span id="hubZoomLabel" class="zoom-display-badge">1.0x</span>
+                            <button class="zoom-hud-btn" onclick="adjustHubZoom(1.5)" title="Zoom In">+</button>
+                            <button class="zoom-hud-btn" style="font-size: 10px; width: 34px;" onclick="resetHubZoom()" title="Reset Zoom">1x</button>
+                        </div>
+
                         <div id="modelArchBadge" class="model-arch-badge">Layers: -- | Clusters: -- | Synapses: Active</div>
                     </div>
                 </div>
@@ -2243,7 +2377,7 @@
         </div>
     </div>
 
-    <!-- MODEL OPTIONS MODAL -->
+    <!-- MODEL OPTIONS MODAL (INCLUDES TIMED KNOWLEDGE INGESTION TRAINING) -->
     <div id="modelOptionsOverlay" class="api-modal-overlay" onclick="closeModelOptionsModal()">
         <div class="api-modal" onclick="event.stopPropagation()">
             <div class="api-modal-header">
@@ -2259,8 +2393,59 @@
                         <div id="optModelArchSnippet" class="preview-desc-text">Explore real-time topology, cluster orbits & synaptic axons.</div>
                     </div>
                     <button type="button" class="app-button" style="width: auto; padding: 0 12px; height: 32px; font-size: 11px; background: rgba(255,255,255,0.18);" onclick="openDedicatedNeuralStage()">
-                        👁️ View 3D Stage (80%)
+                        View 3D Stage (80%)
                     </button>
+                </div>
+            </div>
+
+            <!-- NEURAL TOPIC KNOWLEDGE INGESTION & TRAINING SECTION -->
+            <div class="training-container">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-weight: bold; font-size: 12.5px; color: var(--text-color);">
+                        Neural Knowledge Ingestion & Topic Synthesis
+                    </div>
+                    <span style="font-size: 10px; color: var(--text-color); opacity: 0.8; font-family: monospace;">CRIMSON GROWTH</span>
+                </div>
+                <div class="preview-desc-text">
+                    Harvest real-world facts, rules, and terminology into this model's memory (e.g. "anime", "video editing", "astrophysics"). As factual knowledge compiles, a new crimson cluster actively branches and grows out from the center core in real-time.
+                </div>
+
+                <div style="display: flex; gap: 6px; margin-top: 2px;">
+                    <input type="text" id="trainTopicInput" class="settings-input" placeholder="Topic to learn (e.g. anime, video editing)..." onkeydown="handleTrainKey(event)" />
+                    <button type="button" id="trainTopicBtn" class="train-btn" onclick="trainModelInTopic()">
+                        <span>+ Train</span>
+                    </button>
+                    <button type="button" id="trainCancelBtn" class="app-button" style="display: none; width: auto; padding: 0 10px; height: 36px; background: rgba(255,255,255,0.08);" onclick="cancelOrFinalizeTrainingEarly()">
+                        Finalize
+                    </button>
+                </div>
+
+                <!-- TRAINING DURATION SLIDER (1 SECOND TO 1 HOUR) -->
+                <div class="settings-group" style="margin-top: 4px; background: rgba(0,0,0,0.25); padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <label class="settings-label" style="font-weight: bold;">Training Time (Depth & Source Scale)</label>
+                        <span id="trainDurationLabel" class="stat-card-label" style="font-weight: bold; color: var(--text-color); opacity: 0.95;">30s (Standard Core)</span>
+                    </div>
+                    <input type="range" id="trainDurationSlider" class="anim-slider" min="0" max="11" step="1" value="3" oninput="updateTrainDurationLabel(this.value)" />
+                    <div class="preview-desc-text" id="trainDurationSummary" style="font-size: 10.5px; opacity: 0.7;">
+                        30s: Ingests technical overview, terminology, and 4 multi-source references.
+                    </div>
+                </div>
+
+                <!-- LIVE PREVIEW TOPOLOGY CANVAS (DISPLAYED DURING ACTIVE TRAINING) -->
+                <div id="trainingPreviewContainer" class="training-preview-box">
+                    <canvas id="trainingPreviewCanvas" class="neural-viewport-canvas"></canvas>
+                    <div class="neural-telemetry-badge" style="background: rgba(0,0,0,0.85); border-color: rgba(255,30,68,0.5);">
+                        <span class="status-dot" style="background: #ff1e44; box-shadow: 0 0 8px #ff1e44;"></span>
+                        <span id="trainingPreviewTelemetry">SYNAPSE GENESIS: HARVESTING</span>
+                    </div>
+                </div>
+
+                <div id="trainingStatusText" class="status-text" style="display:none; color: var(--text-color); font-weight: bold;"></div>
+
+                <div class="settings-label" style="margin-top: 4px;">Ingested Knowledge Clusters:</div>
+                <div id="trainedTopicsList" class="trained-topics-list">
+                    <span style="font-size: 11px; opacity: 0.6;">No custom domains trained yet.</span>
                 </div>
             </div>
 
@@ -2312,12 +2497,20 @@
                 
                 <div class="neural-telemetry-badge">
                     <span class="status-dot connected" style="width: 5px; height: 5px;"></span>
-                    <span>DRAG TO ORBIT</span>
+                    <span id="dedicatedStageSubState">DRAG TO ORBIT / SCROLL OR PINCH TO ZOOM (0.5x - 100x)</span>
+                </div>
+
+                <!-- ZOOM CONTROLS (0.5x - 100x) -->
+                <div class="zoom-hud-controls">
+                    <button class="zoom-hud-btn" onclick="adjustDedicatedZoom(-2.0)" title="Zoom Out">-</button>
+                    <span id="dedicatedZoomLabel" class="zoom-display-badge">1.0x</span>
+                    <button class="zoom-hud-btn" onclick="adjustDedicatedZoom(2.0)" title="Zoom In">+</button>
+                    <button class="zoom-hud-btn" style="font-size: 10px; width: 34px;" onclick="resetDedicatedZoom()" title="Reset Zoom">1x</button>
                 </div>
 
                 <div class="dedicated-stage-hud-actions">
                     <button type="button" class="app-button" style="width: auto; height: 28px; font-size: 11px; padding: 0 8px; background: rgba(255,255,255,0.15);" onclick="triggerDedicatedStagePulse()">
-                        ⚡ Pulse
+                        Pulse Synapses
                     </button>
                 </div>
 
@@ -2347,7 +2540,7 @@
             <div class="runner-header">
                 <span class="runner-header-title">Code Sandbox & Live Preview</span>
                 <div class="runner-header-actions">
-                    <button class="app-button" onclick="runEditableCode()">▶ Run</button>
+                    <button class="app-button" onclick="runEditableCode()">Run</button>
                     <button class="close-sidebar-btn" onclick="closeRunnerModal()">Close</button>
                 </div>
             </div>
@@ -2383,7 +2576,7 @@
                 <div class="message-wrapper assistant">
                     <div class="assistant-content-group">
                         <div class="message assistant">
-                            Welcome to Matrix AI. Tap <b>Models</b> in the top right to explore installed models, inspect 3D neural networks, or configure universal guardrails.
+                            Welcome to Matrix AI. Tap Models in the top right to explore installed models, train custom topics into permanent knowledge clusters with variable training times up to 1 hour, inspect 3D neural topologies with up to 100x zoom, or configure universal guardrails.
                         </div>
                         <div class="message-meta"></div>
                     </div>
@@ -2480,7 +2673,7 @@
         };
     </script>
 
-    <!-- MAIN APP SCRIPT -->
+    <!-- MAIN APPLICATION LOGIC -->
     <script>
         const STORAGE_KEY = 'modeldeck_chats_v3';
         const HOST_STORAGE_KEY = 'modeldeck_host_url';
@@ -2489,6 +2682,8 @@
         const NICKNAMES_KEY = 'modeldeck_nicknames_v1';
         const MODEL_RULES_KEY = 'modeldeck_rules_dict_v1';
         const GLOBAL_RULES_KEY = 'modeldeck_global_rules_v1';
+        const MODEL_TRAINING_KEY = 'modeldeck_training_dict_v2';
+        const MODEL_KNOWLEDGE_CORPUS_KEY = 'modeldeck_knowledge_corpus_v1';
         const MODEL_WEB_SEARCH_KEY = 'modeldeck_websearch_dict_v1';
         const WEB_PROVIDER_KEY = 'modeldeck_web_provider_v1';
         const WEB_API_KEY_STORAGE = 'modeldeck_web_api_key_v1';
@@ -2542,6 +2737,35 @@
 
         let hubManifoldEngine = null;
         let dedicatedStageEngine = null;
+        let trainingPreviewEngine = null;
+
+        // Interactive Training Duration Steps Map (1 second to 1 hour)
+        const TRAIN_TIME_STEPS = [
+            { seconds: 1, label: '1s (Instant Flash)', desc: '1s: Instant single-node seed injection.' },
+            { seconds: 5, label: '5s (Rapid Primer)', desc: '5s: Quick encyclopedic abstract and key entities.' },
+            { seconds: 15, label: '15s (Focused Overview)', desc: '15s: Glossary extraction and foundational rules.' },
+            { seconds: 30, label: '30s (Standard Core)', desc: '30s: Multi-source extraction and technical terminology.' },
+            { seconds: 60, label: '1m (Deep Synthesis)', desc: '1m: Comprehensive guide crawling plus local neural extraction.' },
+            { seconds: 120, label: '2m (Advanced Lobe)', desc: '2m: Multi-pass extraction across 10+ sub-domains.' },
+            { seconds: 300, label: '5m (Intense Ingestion)', desc: '5m: Deep multi-endpoint ingestion, edge cases, and deduplication.' },
+            { seconds: 600, label: '10m (Expert Specialization)', desc: '10m: Exhaustive literature distillation and dendritic expansion.' },
+            { seconds: 900, label: '15m (Mastery Archive)', desc: '15m: 50+ domain documents ingested and structured.' },
+            { seconds: 1800, label: '30m (Cognitive Immersion)', desc: '30m: 100+ documents, deep cross-referencing and weight synthesis.' },
+            { seconds: 2700, label: '45m (Deep Research Matrix)', desc: '45m: Extensive cross-field synthesis and full semantic mapping.' },
+            { seconds: 3600, label: '1h (Exhaustive Neural Foundation)', desc: '1h: Maximum depth with 200+ sources, continuous growth and recursive training.' }
+        ];
+
+        let activeTrainingAborted = false;
+
+        function updateTrainDurationLabel(stepIndex) {
+            const step = TRAIN_TIME_STEPS[parseInt(stepIndex, 10)] || TRAIN_TIME_STEPS[3];
+            document.getElementById('trainDurationLabel').textContent = step.label;
+            document.getElementById('trainDurationSummary').textContent = step.desc;
+        }
+
+        function cancelOrFinalizeTrainingEarly() {
+            activeTrainingAborted = true;
+        }
 
         function initNeuralWorker() {
             try {
@@ -2583,29 +2807,66 @@
             });
         }
 
-        function parseModelSpecs(modelName) {
-            const name = (modelName || '').toLowerCase();
-            if (name.includes('70b') || name.includes('72b')) {
-                return { label: '70B Ultra Dense', params: '70 Billion', clusters: 16, nodes: 440, layers: 80, radius: 130, synapseProb: 0.18 };
-            }
-            if (name.includes('32b') || name.includes('34b')) {
-                return { label: '32B Dense Core', params: '32 Billion', clusters: 12, nodes: 330, layers: 64, radius: 115, synapseProb: 0.22 };
-            }
-            if (name.includes('14b')) {
-                return { label: '14B Neural Manifold', params: '14 Billion', clusters: 10, nodes: 260, layers: 48, radius: 100, synapseProb: 0.25 };
-            }
-            if (name.includes('8b') || name.includes('7b')) {
-                return { label: '7B/8B Transformer', params: '7.6 Billion', clusters: 8, nodes: 190, layers: 32, radius: 88, synapseProb: 0.28 };
-            }
-            if (name.includes('3b') || name.includes('3.2b') || name.includes('2b')) {
-                return { label: '3B Compact Network', params: '3.2 Billion', clusters: 6, nodes: 140, layers: 24, radius: 75, synapseProb: 0.32 };
-            }
-            if (name.includes('1.5b') || name.includes('1b') || name.includes('0.5b')) {
-                return { label: '1.5B Micro Mesh', params: '1.5 Billion', clusters: 4, nodes: 85, layers: 16, radius: 62, synapseProb: 0.38 };
-            }
-            return { label: 'Standard Topology', params: '8B (Est.)', clusters: 8, nodes: 180, layers: 32, radius: 85, synapseProb: 0.28 };
+        /* ------------------------------------------------------------- */
+        /* MODEL STORAGE & KNOWLEDGE CORPUS LOGIC                        */
+        /* ------------------------------------------------------------- */
+        function getModelTrainingDict() {
+            try { return JSON.parse(localStorage.getItem(MODEL_TRAINING_KEY)) || {}; } catch (e) { return {}; }
         }
 
+        function saveModelTrainingDict(dict) {
+            localStorage.setItem(MODEL_TRAINING_KEY, JSON.stringify(dict));
+        }
+
+        function getTrainedTopicsForModel(modelName) {
+            if (!modelName) return [];
+            const dict = getModelTrainingDict();
+            return dict[modelName] || [];
+        }
+
+        function getKnowledgeCorpus() {
+            try { return JSON.parse(localStorage.getItem(MODEL_KNOWLEDGE_CORPUS_KEY)) || {}; } catch(e) { return {}; }
+        }
+
+        function saveKnowledgeCorpus(corpus) {
+            localStorage.setItem(MODEL_KNOWLEDGE_CORPUS_KEY, JSON.stringify(corpus));
+        }
+
+        function parseModelSpecs(modelName) {
+            const name = (modelName || '').toLowerCase();
+            let base = { label: 'Standard Topology', params: '8B (Est.)', clusters: 5, nodes: 180, layers: 32, radius: 85, synapseProb: 0.28 };
+
+            if (name.includes('70b') || name.includes('72b')) {
+                base = { label: '70B Ultra Dense', params: '70 Billion', clusters: 16, nodes: 440, layers: 80, radius: 130, synapseProb: 0.18 };
+            } else if (name.includes('32b') || name.includes('34b')) {
+                base = { label: '32B Dense Core', params: '32 Billion', clusters: 12, nodes: 330, layers: 64, radius: 115, synapseProb: 0.22 };
+            } else if (name.includes('14b')) {
+                base = { label: '14B Neural Manifold', params: '14 Billion', clusters: 10, nodes: 260, layers: 48, radius: 100, synapseProb: 0.25 };
+            } else if (name.includes('8b') || name.includes('7b')) {
+                base = { label: '7B/8B Transformer', params: '7.6 Billion', clusters: 8, nodes: 190, layers: 32, radius: 88, synapseProb: 0.28 };
+            } else if (name.includes('3b') || name.includes('3.2b') || name.includes('2b')) {
+                base = { label: '3B Compact Network', params: '3.2 Billion', clusters: 6, nodes: 140, layers: 24, radius: 75, synapseProb: 0.32 };
+            } else if (name.includes('1.5b') || name.includes('1b') || name.includes('0.5b')) {
+                base = { label: '1.5B Micro Mesh', params: '1.5 Billion', clusters: 4, nodes: 85, layers: 16, radius: 62, synapseProb: 0.38 };
+            }
+
+            const trainedTopics = getTrainedTopicsForModel(modelName);
+            base.trainedCount = trainedTopics.length;
+            base.clusters += trainedTopics.length;
+            base.nodes += Math.min(trainedTopics.length * 24, 110);
+            return base;
+        }
+
+        const BASE_CLUSTER_DEFS = [
+            { id: 0, name: 'Logic & Math' },
+            { id: 1, name: 'Coding & Architecture' },
+            { id: 2, name: 'General Cognition' },
+            { id: 3, name: 'Creative & Language' }
+        ];
+
+        /* ------------------------------------------------------------- */
+        /* HIGH-PERFORMANCE 3D NEURAL MANIFOLD ENGINE (0.5x - 100x ZOOM) */
+        /* ------------------------------------------------------------- */
         class NeuralManifoldEngine {
             constructor(canvasId, containerId, modelName = 'llama3.2') {
                 this.canvas = document.getElementById(canvasId);
@@ -2618,18 +2879,28 @@
 
                 this.rotX = 0.4;
                 this.rotY = 0.6;
-                this.rotSpeedX = 0.003;
-                this.rotSpeedY = 0.006;
+                this.rotSpeedX = 0.0025;
+                this.rotSpeedY = 0.005;
+
+                // Zoom Level support: 0.5x to 100x
+                this.zoom = 1.0;
+                this.targetZoom = 1.0;
+                this.minZoom = 0.5;
+                this.maxZoom = 100.0;
 
                 this.isDragging = false;
                 this.lastMouseX = 0;
                 this.lastMouseY = 0;
+                this.lastTouchDist = null;
 
                 this.nodes = [];
                 this.synapses = [];
                 this.pulses = [];
+                this.activeClusterPulse = {};
                 this.activeEnergy = 0;
                 this.animId = null;
+
+                this.growthAnimation = null;
 
                 this.initGeometry();
                 this.setupEvents();
@@ -2644,75 +2915,165 @@
                 this.initGeometry();
             }
 
+            setZoom(val) {
+                this.targetZoom = Math.max(this.minZoom, Math.min(this.maxZoom, val));
+                this.updateZoomLabels();
+            }
+
+            updateZoomLabels() {
+                const zFormatted = (this.targetZoom >= 10 ? this.targetZoom.toFixed(0) : this.targetZoom.toFixed(1)) + 'x';
+                const hubLbl = document.getElementById('hubZoomLabel');
+                const dedLbl = document.getElementById('dedicatedZoomLabel');
+                if (hubLbl) hubLbl.textContent = zFormatted;
+                if (dedLbl) dedLbl.textContent = zFormatted;
+            }
+
             initGeometry() {
                 const { clusters, nodes, radius, synapseProb } = this.specs;
                 this.nodes = [];
                 this.synapses = [];
                 this.pulses = [];
+                this.activeClusterPulse = {};
 
                 const clusterCenters = [];
                 const goldenRatio = (1 + Math.sqrt(5)) / 2;
+
+                const trainedTopics = getTrainedTopicsForModel(this.modelName);
+
                 for (let i = 0; i < clusters; i++) {
+                    const isTrained = i >= 4 && (i - 4) < trainedTopics.length;
                     const theta = 2 * Math.PI * i / goldenRatio;
                     const phi = Math.acos(1 - 2 * (i + 0.5) / clusters);
-                    const r = radius * (0.6 + Math.random() * 0.4);
+                    
+                    const r = isTrained ? radius * 1.08 : radius * (0.6 + Math.random() * 0.4);
+                    const topicTitle = isTrained ? trainedTopics[i - 4] : (BASE_CLUSTER_DEFS[i % 4]?.name || `Cluster ${i}`);
+
                     clusterCenters.push({
+                        id: i,
                         x: r * Math.sin(phi) * Math.cos(theta),
                         y: r * Math.sin(phi) * Math.sin(theta) * 0.75,
-                        z: r * Math.cos(phi)
+                        z: r * Math.cos(phi),
+                        isTrained,
+                        topicName: topicTitle
                     });
                 }
 
-                const nodesPerCluster = Math.floor(nodes / clusters);
+                const nodesPerCluster = Math.max(12, Math.floor(nodes / clusters));
+
                 for (let c = 0; c < clusters; c++) {
                     const center = clusterCenters[c];
+                    const isCrimson = center.isTrained;
+
                     for (let n = 0; n < nodesPerCluster; n++) {
-                        const spread = radius * 0.35;
+                        const spread = radius * 0.32;
                         const nx = center.x + (Math.random() - 0.5) * spread;
                         const ny = center.y + (Math.random() - 0.5) * spread;
                         const nz = center.z + (Math.random() - 0.5) * spread;
 
                         this.nodes.push({
                             x: nx, y: ny, z: nz,
+                            originX: 0, originY: 0, originZ: 0,
                             cluster: c,
-                            size: 1.1 + Math.random() * 1.8,
+                            isCrimson,
+                            size: isCrimson ? (1.5 + Math.random() * 1.6) : (1.1 + Math.random() * 1.5),
                             phase: Math.random() * Math.PI * 2,
-                            activity: 0.1 + Math.random() * 0.3
+                            activity: isCrimson ? 0.6 : (0.1 + Math.random() * 0.3),
+                            growthProgress: 1.0
                         });
                     }
                 }
 
-                const coreCount = Math.floor(nodes * 0.12);
+                // Core Cognitive Synapses in origin center
+                const coreCount = Math.floor(nodes * 0.08);
                 for (let i = 0; i < coreCount; i++) {
                     const angle = (i / coreCount) * Math.PI * 2;
-                    const r = (radius * 0.25) * Math.random();
+                    const r = (radius * 0.22) * Math.random();
                     this.nodes.push({
                         x: Math.cos(angle) * r,
-                        y: (Math.random() - 0.5) * radius * 0.6,
+                        y: (Math.random() - 0.5) * radius * 0.5,
                         z: Math.sin(angle) * r,
+                        originX: 0, originY: 0, originZ: 0,
                         cluster: -1,
+                        isCrimson: false,
                         size: 1.8 + Math.random() * 2.0,
                         phase: Math.random() * Math.PI * 2,
-                        activity: 0.4 + Math.random() * 0.5
+                        activity: 0.4 + Math.random() * 0.5,
+                        growthProgress: 1.0
                     });
                 }
 
+                this.recalculateSynapses(synapseProb, radius);
+            }
+
+            recalculateSynapses(synapseProb, radius) {
+                this.synapses = [];
                 const nodeLen = this.nodes.length;
+
                 for (let i = 0; i < nodeLen; i++) {
+                    let connectionsFromNode = 0;
                     for (let j = i + 1; j < nodeLen; j++) {
                         const n1 = this.nodes[i];
                         const n2 = this.nodes[j];
+
+                        if (connectionsFromNode > 7) break;
+
                         const dx = n1.x - n2.x;
                         const dy = n1.y - n2.y;
                         const dz = n1.z - n2.z;
                         const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-                        const maxDist = (n1.cluster === n2.cluster) ? (radius * 0.5) : (radius * 0.38);
+                        const maxDist = (n1.cluster === n2.cluster) ? (radius * 0.48) : (radius * 0.35);
                         if (dist < maxDist && Math.random() < synapseProb) {
-                            this.synapses.push({ from: i, to: j });
+                            const isCrimsonSynapse = n1.isCrimson || n2.isCrimson;
+                            this.synapses.push({ from: i, to: j, isCrimson: isCrimsonSynapse });
+                            connectionsFromNode++;
                         }
                     }
                 }
+            }
+
+            // TRIGGER ACTIVE CONTINUOUS GROWTH IN REAL-TIME DURING TRAINING
+            triggerContinuousGrowthStep(targetClusterId, count = 4) {
+                const radius = this.specs.radius;
+                const angle = (targetClusterId * 1.35) % (Math.PI * 2);
+                const targetCenterX = Math.cos(angle) * radius * 1.15;
+                const targetCenterY = (Math.sin(angle * 1.5)) * radius * 0.7;
+                const targetCenterZ = Math.sin(angle) * radius * 1.15;
+
+                const startIndex = this.nodes.length;
+
+                for (let n = 0; n < count; n++) {
+                    const spread = radius * 0.32;
+                    const destX = targetCenterX + (Math.random() - 0.5) * spread;
+                    const destY = targetCenterY + (Math.random() - 0.5) * spread;
+                    const destZ = targetCenterZ + (Math.random() - 0.5) * spread;
+
+                    this.nodes.push({
+                        x: 0, y: 0, z: 0,
+                        targetX: destX, targetY: destY, targetZ: destZ,
+                        cluster: targetClusterId,
+                        isCrimson: true,
+                        size: 2.2 + Math.random() * 1.8,
+                        phase: Math.random() * Math.PI * 2,
+                        activity: 1.0,
+                        growthProgress: 0.0,
+                        birthTime: performance.now()
+                    });
+                }
+
+                // Connect to core and peer nodes
+                for (let i = startIndex; i < this.nodes.length; i++) {
+                    const coreNodeIdx = Math.floor(Math.random() * Math.min(10, this.nodes.length));
+                    this.synapses.push({ from: coreNodeIdx, to: i, isCrimson: true });
+
+                    for (let j = i + 1; j < this.nodes.length; j++) {
+                        if (Math.random() < 0.4) {
+                            this.synapses.push({ from: i, to: j, isCrimson: true });
+                        }
+                    }
+                }
+
+                this.pulseCluster(targetClusterId, 2.5);
             }
 
             setupResizeObserver() {
@@ -2738,6 +3099,7 @@
 
             setupEvents() {
                 if (!this.container) return;
+                
                 const onStart = (clientX, clientY) => {
                     this.isDragging = true;
                     this.lastMouseX = clientX;
@@ -2748,40 +3110,91 @@
                     if (!this.isDragging) return;
                     const dx = clientX - this.lastMouseX;
                     const dy = clientY - this.lastMouseY;
-                    this.rotY += dx * 0.008;
-                    this.rotX += dy * 0.008;
+                    this.rotY += dx * 0.007;
+                    this.rotX += dy * 0.007;
                     this.lastMouseX = clientX;
                     this.lastMouseY = clientY;
                 };
 
-                const onEnd = () => { this.isDragging = false; };
+                const onEnd = () => { 
+                    this.isDragging = false; 
+                    this.lastTouchDist = null;
+                };
 
                 this.container.addEventListener('mousedown', (e) => onStart(e.clientX, e.clientY));
                 window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
                 window.addEventListener('mouseup', onEnd);
 
+                // WHEEL ZOOM LISTENER (0.5x to 100x with log scaling)
+                this.container.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const factor = e.deltaY > 0 ? 0.85 : 1.18;
+                    this.setZoom(this.targetZoom * factor);
+                }, { passive: false });
+
+                // TOUCH & PINCH-TO-ZOOM (0.5x to 100x)
                 this.container.addEventListener('touchstart', (e) => {
-                    if (e.touches.length === 1) onStart(e.touches[0].clientX, e.touches[0].clientY);
+                    if (e.touches.length === 1) {
+                        onStart(e.touches[0].clientX, e.touches[0].clientY);
+                    } else if (e.touches.length === 2) {
+                        const dx = e.touches[0].clientX - e.touches[1].clientX;
+                        const dy = e.touches[0].clientY - e.touches[1].clientY;
+                        this.lastTouchDist = Math.hypot(dx, dy);
+                    }
                 }, { passive: true });
 
                 window.addEventListener('touchmove', (e) => {
-                    if (this.isDragging && e.touches.length === 1) onMove(e.touches[0].clientX, e.touches[0].clientY);
+                    if (e.touches.length === 1 && this.isDragging) {
+                        onMove(e.touches[0].clientX, e.touches[0].clientY);
+                    } else if (e.touches.length === 2 && this.lastTouchDist) {
+                        const dx = e.touches[0].clientX - e.touches[1].clientX;
+                        const dy = e.touches[0].clientY - e.touches[1].clientY;
+                        const dist = Math.hypot(dx, dy);
+                        const factor = dist / this.lastTouchDist;
+                        this.setZoom(this.targetZoom * factor);
+                        this.lastTouchDist = dist;
+                    }
                 }, { passive: true });
 
                 window.addEventListener('touchend', onEnd);
             }
 
-            pulse() {
-                this.activeEnergy = Math.min(this.activeEnergy + 1.2, 3.5);
+            pulse(intensity = 1.2) {
+                this.activeEnergy = Math.min(this.activeEnergy + intensity, 3.5);
                 const count = Math.min(6, this.synapses.length);
                 for (let i = 0; i < count; i++) {
                     const syn = this.synapses[Math.floor(Math.random() * this.synapses.length)];
                     this.pulses.push({
                         from: syn.from,
                         to: syn.to,
+                        isCrimson: syn.isCrimson,
                         progress: 0,
                         speed: 0.04 + Math.random() * 0.05,
-                        size: 2.0 + Math.random() * 1.2
+                        size: 2.0 + Math.random() * 1.5
+                    });
+                }
+            }
+
+            pulseCluster(clusterId, intensity = 1.8) {
+                this.activeClusterPulse[clusterId] = Math.min((this.activeClusterPulse[clusterId] || 0) + intensity, 4.0);
+                
+                const clusterSynapses = this.synapses.filter(s => {
+                    const n1 = this.nodes[s.from];
+                    const n2 = this.nodes[s.to];
+                    return (n1 && n1.cluster === clusterId) || (n2 && n2.cluster === clusterId);
+                });
+
+                const pool = clusterSynapses.length ? clusterSynapses : this.synapses;
+                const count = Math.min(8, pool.length);
+                for (let i = 0; i < count; i++) {
+                    const syn = pool[Math.floor(Math.random() * pool.length)];
+                    this.pulses.push({
+                        from: syn.from,
+                        to: syn.to,
+                        isCrimson: syn.isCrimson || clusterId >= 4,
+                        progress: 0,
+                        speed: 0.05 + Math.random() * 0.06,
+                        size: 2.4 + Math.random() * 1.8
                     });
                 }
             }
@@ -2793,9 +3206,32 @@
                 const cx = this.width / 2;
                 const cy = this.height / 2;
                 const minDim = Math.min(this.width, this.height);
-                const fov = Math.max(220, minDim * 1.4);
+
+                // Smooth Zoom Interpolation
+                this.zoom += (this.targetZoom - this.zoom) * 0.16;
+                const fov = Math.max(220, minDim * 1.4) * this.zoom;
 
                 this.activeEnergy *= 0.94;
+                Object.keys(this.activeClusterPulse).forEach(k => {
+                    this.activeClusterPulse[k] *= 0.92;
+                });
+
+                // Smooth Dendritic Node Outgrowth Physics
+                const now = performance.now();
+                for (let i = 0; i < this.nodes.length; i++) {
+                    const node = this.nodes[i];
+                    if (node.growthProgress !== undefined && node.growthProgress < 1.0) {
+                        const elapsed = now - (node.birthTime || now);
+                        const p = Math.min(1.0, elapsed / 1800);
+                        const easeP = 1 - Math.pow(1 - p, 3);
+                        node.growthProgress = easeP;
+                        if (node.targetX !== undefined) {
+                            node.x = node.targetX * easeP;
+                            node.y = node.targetY * easeP;
+                            node.z = node.targetZ * easeP;
+                        }
+                    }
+                }
 
                 if (!this.isDragging) {
                     this.rotY += this.rotSpeedY * (1 + this.activeEnergy * 0.8);
@@ -2806,7 +3242,6 @@
 
                 const cosX = Math.cos(this.rotX), sinX = Math.sin(this.rotX);
                 const cosY = Math.cos(this.rotY), sinY = Math.sin(this.rotY);
-
                 const cameraZ = 280;
 
                 const projectedNodes = this.nodes.map((node, idx) => {
@@ -2826,36 +3261,56 @@
                         id: idx,
                         px, py, z: z2, scale,
                         size: node.size,
-                        phase: node.phase
+                        phase: node.phase,
+                        cluster: node.cluster,
+                        isCrimson: node.isCrimson,
+                        growthProgress: node.growthProgress || 1.0
                     };
                 });
 
+                // SYNAPSE AXONS RENDER
                 ctx.lineWidth = 0.85;
                 for (let i = 0; i < this.synapses.length; i++) {
                     const syn = this.synapses[i];
                     const p1 = projectedNodes[syn.from];
                     const p2 = projectedNodes[syn.to];
+                    if (!p1 || !p2) continue;
 
-                    const depthAlpha = Math.max(0.04, Math.min(0.45, (1 - (p1.z + p2.z) / 450) * 0.35));
-                    const energyAlpha = depthAlpha + (this.activeEnergy * 0.12);
+                    const cPulse = Math.max(
+                        this.activeClusterPulse[p1.cluster] || 0,
+                        this.activeClusterPulse[p2.cluster] || 0
+                    );
 
-                    ctx.strokeStyle = `rgba(255, 255, 255, ${energyAlpha})`;
+                    const depthAlpha = Math.max(0.04, Math.min(0.55, (1 - (p1.z + p2.z) / 450) * 0.35));
+                    const energyAlpha = depthAlpha + (this.activeEnergy * 0.12) + (cPulse * 0.25);
+
+                    if (syn.isCrimson) {
+                        ctx.strokeStyle = `rgba(255, 30, 68, ${Math.min(1.0, energyAlpha * 1.6)})`;
+                        ctx.lineWidth = 1.1;
+                    } else {
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${energyAlpha})`;
+                        ctx.lineWidth = 0.85;
+                    }
+
                     ctx.beginPath();
                     ctx.moveTo(p1.px, p1.py);
                     ctx.lineTo(p2.px, p2.py);
                     ctx.stroke();
                 }
 
+                // SYNAPTIC ENERGY PULSES
                 for (let i = this.pulses.length - 1; i >= 0; i--) {
                     const p = this.pulses[i];
                     p.progress += p.speed * (1 + this.activeEnergy * 0.5);
 
                     const p1 = projectedNodes[p.from];
                     const p2 = projectedNodes[p.to];
+                    if (!p1 || !p2) { this.pulses.splice(i, 1); continue; }
+
                     const curX = p1.px + (p2.px - p1.px) * p.progress;
                     const curY = p1.py + (p2.py - p1.py) * p.progress;
 
-                    ctx.fillStyle = '#ffffff';
+                    ctx.fillStyle = p.isCrimson ? '#ff1e44' : '#ffffff';
                     ctx.beginPath();
                     ctx.arc(curX, curY, p.size * ((p1.scale + p2.scale) / 2), 0, Math.PI * 2);
                     ctx.fill();
@@ -2863,21 +3318,40 @@
                     if (p.progress >= 1) this.pulses.splice(i, 1);
                 }
 
+                // DEPTH SORT AND DRAW NEURAL NODES
                 const sortedNodes = [...projectedNodes].sort((a, b) => b.z - a.z);
 
                 sortedNodes.forEach(n => {
                     const alpha = Math.max(0.15, Math.min(1.0, (1 - n.z / 320)));
-                    const pulseRadius = (n.size * n.scale * 1.3) + (Math.sin(Date.now() * 0.003 + n.phase) * 0.5) + (this.activeEnergy * 0.6);
+                    const cPulse = this.activeClusterPulse[n.cluster] || 0;
+                    const pulseRadius = (n.size * n.scale * 1.3) + 
+                                        (Math.sin(Date.now() * 0.003 + n.phase) * 0.5) + 
+                                        (this.activeEnergy * 0.6) + 
+                                        (cPulse * 1.2);
 
-                    ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.2})`;
-                    ctx.beginPath();
-                    ctx.arc(n.px, n.py, pulseRadius * 2.0, 0, Math.PI * 2);
-                    ctx.fill();
+                    if (n.isCrimson) {
+                        // CRIMSON TRAINED KNOWLEDGE NODES
+                        ctx.fillStyle = `rgba(255, 30, 68, ${alpha * 0.35})`;
+                        ctx.beginPath();
+                        ctx.arc(n.px, n.py, pulseRadius * 2.3, 0, Math.PI * 2);
+                        ctx.fill();
 
-                    ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.95})`;
-                    ctx.beginPath();
-                    ctx.arc(n.px, n.py, Math.max(0.7, pulseRadius), 0, Math.PI * 2);
-                    ctx.fill();
+                        ctx.fillStyle = `rgba(255, 45, 80, ${alpha * 0.98})`;
+                        ctx.beginPath();
+                        ctx.arc(n.px, n.py, Math.max(1.0, pulseRadius), 0, Math.PI * 2);
+                        ctx.fill();
+                    } else {
+                        // STANDARD MONOCHROME NODES
+                        ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.2})`;
+                        ctx.beginPath();
+                        ctx.arc(n.px, n.py, pulseRadius * 2.0, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.95})`;
+                        ctx.beginPath();
+                        ctx.arc(n.px, n.py, Math.max(0.7, pulseRadius), 0, Math.PI * 2);
+                        ctx.fill();
+                    }
                 });
             }
 
@@ -2896,6 +3370,345 @@
                     this.animId = null;
                 }
             }
+        }
+
+        /* ------------------------------------------------------------- */
+        /* ZOOM HELPER INTERFACES (0.5x - 100x)                          */
+        /* ------------------------------------------------------------- */
+        function adjustHubZoom(step) {
+            if (hubManifoldEngine) {
+                const mult = step > 0 ? 1.5 : 0.65;
+                hubManifoldEngine.setZoom(hubManifoldEngine.targetZoom * mult);
+            }
+        }
+        function resetHubZoom() {
+            if (hubManifoldEngine) hubManifoldEngine.setZoom(1.0);
+        }
+
+        function adjustDedicatedZoom(step) {
+            if (dedicatedStageEngine) {
+                const mult = step > 0 ? 1.5 : 0.65;
+                dedicatedStageEngine.setZoom(dedicatedStageEngine.targetZoom * mult);
+            }
+        }
+        function resetDedicatedZoom() {
+            if (dedicatedStageEngine) dedicatedStageEngine.setZoom(1.0);
+        }
+
+        /* ------------------------------------------------------------- */
+        /* MULTI-SOURCE CRAWLER & LOCAL NEURAL SYNTHESIS ENGINE          */
+        /* ------------------------------------------------------------- */
+        function handleTrainKey(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                trainModelInTopic();
+            }
+        }
+
+        async function harvestDomainKnowledgeMultiPass(topic, maxSourcesTarget = 6, signalCheck = () => false) {
+            const rawSections = [];
+            const visitedQueries = new Set();
+            const subQueries = [
+                topic,
+                `${topic} fundamentals overview`,
+                `${topic} advanced principles terminology`,
+                `${topic} techniques heuristics`,
+                `${topic} classification ontology`,
+                `${topic} standard practices and edge cases`
+            ];
+
+            // 1. Wikipedia Direct Abstract & Lead Sections
+            try {
+                if (signalCheck()) return rawSections.join('\n\n');
+                const wikiRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=${encodeURIComponent(topic)}&format=json&origin=*`);
+                const wikiData = await wikiRes.json();
+                if (wikiData.query && wikiData.query.pages) {
+                    const pages = Object.values(wikiData.query.pages);
+                    if (pages.length && pages[0].extract && pages[0].extract.length > 60) {
+                        rawSections.push(`[SOURCE: WIKIPEDIA CORE ARCHIVE - ${topic.toUpperCase()}]\n${pages[0].extract.substring(0, 3000)}`);
+                    }
+                }
+            } catch(e) {}
+
+            // 2. Iterative Multi-Source Crawl
+            for (let i = 0; i < subQueries.length && rawSections.length < maxSourcesTarget; i++) {
+                if (signalCheck()) break;
+                const query = subQueries[i];
+                if (visitedQueries.has(query)) continue;
+                visitedQueries.add(query);
+
+                // Wikipedia Secondary Search
+                try {
+                    const wikiSearch = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&utf8=&format=json&origin=*`);
+                    const searchData = await wikiSearch.json();
+                    if (searchData.query?.search?.length) {
+                        const compiledSnippets = searchData.query.search.slice(0, 3)
+                            .map(s => s.snippet.replace(/<[^>]*>/g, ''))
+                            .filter(t => t.length > 40)
+                            .join('\n');
+                        if (compiledSnippets) {
+                            rawSections.push(`[SOURCE: KNOWLEDGE GRAPH SUB-QUERY - ${query.toUpperCase()}]\n${compiledSnippets}`);
+                        }
+                    }
+                } catch(e) {}
+
+                // Jina Deep Reader fallback for modern technical heuristics
+                try {
+                    if (signalCheck() || rawSections.length >= maxSourcesTarget) break;
+                    const jinaRes = await fetch(`https://s.jina.ai/${encodeURIComponent(query)}`, {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (jinaRes.ok) {
+                        const jinaData = await jinaRes.json();
+                        if (jinaData && Array.isArray(jinaData.data)) {
+                            jinaData.data.slice(0, 2).forEach(item => {
+                                const body = (item.content || item.description || '').replace(/\s+/g, ' ').substring(0, 1200);
+                                if (body.length > 80) {
+                                    rawSections.push(`[SOURCE: DEEP CRAWL - ${item.title || query}]\n${body}`);
+                                }
+                            });
+                        }
+                    }
+                } catch(e) {}
+
+                // Small breath to avoid rate limits
+                await new Promise(r => setTimeout(r, 120));
+            }
+
+            return rawSections.join('\n\n\n');
+        }
+
+        // Run local model neural extraction pass
+        async function runLocalNeuralConsolidation(modelName, topic, rawCorpus, onTokenCallback) {
+            const host = await getHost();
+            const extractionPrompt = `You are an automated neural knowledge compiler. Read the following technical source material on "${topic}".
+Synthesize a comprehensive, authoritative domain dossier. 
+Output structured knowledge with:
+1. DEFINITIVE DEFINITION & ONTOLOGY
+2. CORE HEURISTICS, FORMULAS & WORKFLOW RULES
+3. SPECIALIZED DOMAIN TERMINOLOGY (with concise definitions)
+4. EDGE CASES & COMMON PITFALLS
+
+Source material:
+${rawCorpus.substring(0, 4500)}
+
+Generate the concise master knowledge dossier now:`;
+
+            try {
+                const res = await fetch(`${host}/api/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: modelName,
+                        prompt: extractionPrompt,
+                        stream: true,
+                        options: { temperature: 0.2, num_ctx: 4096 }
+                    })
+                });
+
+                if (!res.ok) throw new Error('Local consolidation response code ' + res.status);
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let fullSynthesis = '';
+                let streamBuffer = '';
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    streamBuffer += decoder.decode(value, { stream: true });
+                    const lines = streamBuffer.split('\n');
+                    streamBuffer = lines.pop();
+
+                    for (const line of lines) {
+                        if (!line.trim()) continue;
+                        const parsed = JSON.parse(line);
+                        if (parsed.response) {
+                            fullSynthesis += parsed.response;
+                            if (onTokenCallback) onTokenCallback(parsed.response, fullSynthesis);
+                        }
+                    }
+                }
+
+                return fullSynthesis.trim();
+            } catch (err) {
+                // If local Ollama endpoint fails or is slow, return formatted raw corpus fallback
+                return rawCorpus.substring(0, 3000);
+            }
+        }
+
+        /* ------------------------------------------------------------- */
+        /* DEEP TRAINING ORCHESTRATOR WITH TIMER SLIDER                  */
+        /* ------------------------------------------------------------- */
+        async function trainModelInTopic() {
+            const input = document.getElementById('trainTopicInput');
+            const topic = input.value.trim();
+            const btn = document.getElementById('trainTopicBtn');
+            const cancelBtn = document.getElementById('trainCancelBtn');
+            const statusEl = document.getElementById('trainingStatusText');
+            const previewContainer = document.getElementById('trainingPreviewContainer');
+            const previewTelemetry = document.getElementById('trainingPreviewTelemetry');
+
+            if (!topic) {
+                input.classList.add('input-error');
+                setTimeout(() => input.classList.remove('input-error'), 1800);
+                return;
+            }
+
+            if (!editingModelName) return;
+
+            // Compute allocated training time and source scale from slider
+            const sliderVal = parseInt(document.getElementById('trainDurationSlider').value, 10);
+            const trainConfig = TRAIN_TIME_STEPS[sliderVal] || TRAIN_TIME_STEPS[3];
+            const targetSeconds = trainConfig.seconds;
+
+            // Sources target scales logarithmically with training time
+            const maxSources = Math.min(180, Math.max(2, Math.round(Math.log2(targetSeconds + 1) * 3.5)));
+
+            activeTrainingAborted = false;
+            btn.classList.add('training');
+            btn.textContent = 'Training...';
+            cancelBtn.style.display = 'block';
+            statusEl.style.display = 'block';
+
+            // Open Live Training Topology Viewport
+            previewContainer.classList.add('active');
+            if (!trainingPreviewEngine) {
+                trainingPreviewEngine = new NeuralManifoldEngine('trainingPreviewCanvas', 'trainingPreviewContainer', editingModelName);
+            } else {
+                trainingPreviewEngine.setModel(editingModelName);
+                trainingPreviewEngine.resize();
+                trainingPreviewEngine.start();
+            }
+
+            const targetClusterId = 4 + getTrainedTopicsForModel(editingModelName).length;
+            const startTime = performance.now();
+            const endTime = startTime + (targetSeconds * 1000);
+
+            // Phase 1: Harvesting multi-source technical documents
+            statusEl.textContent = `[PHASE 1/3] Harvesting ${maxSources} technical sources for "${topic}"... (Time Allocated: ${trainConfig.label})`;
+            previewTelemetry.textContent = `CRAWLING REPOSITORIES: [${topic.toUpperCase()}]`;
+
+            // Interval to trigger active node outgrowth in rhythm
+            const growthInterval = setInterval(() => {
+                if (activeTrainingAborted) return;
+                if (trainingPreviewEngine) trainingPreviewEngine.triggerContinuousGrowthStep(targetClusterId, 2);
+                if (hubManifoldEngine) hubManifoldEngine.triggerContinuousGrowthStep(targetClusterId, 2);
+                if (dedicatedStageEngine) dedicatedStageEngine.triggerContinuousGrowthStep(targetClusterId, 2);
+            }, 600);
+
+            let rawCorpus = '';
+            try {
+                rawCorpus = await harvestDomainKnowledgeMultiPass(topic, maxSources, () => activeTrainingAborted);
+            } catch (err) {
+                rawCorpus = `Foundational reference data for ${topic}.`;
+            }
+
+            if (!rawCorpus) {
+                rawCorpus = `Foundational rules, definitions, and operational heuristics for ${topic}.`;
+            }
+
+            // Phase 2: Local Neural Consolidation
+            statusEl.textContent = `[PHASE 2/3] Local neural weights digesting corpus via ${editingModelName}...`;
+            previewTelemetry.textContent = `SYNAPSE SYNTHESIS: RECURSIVE CONSOLIDATION`;
+
+            let consolidatedDossier = '';
+            const remainingTime = Math.max(0, endTime - performance.now());
+
+            if (targetSeconds >= 15 && !activeTrainingAborted) {
+                consolidatedDossier = await runLocalNeuralConsolidation(editingModelName, topic, rawCorpus, (token, currentText) => {
+                    previewTelemetry.textContent = `COMPILING WEIGHTS: ${currentText.length} TOKENS`;
+                    if (Math.random() < 0.15) {
+                        if (trainingPreviewEngine) trainingPreviewEngine.pulseCluster(targetClusterId, 1.2);
+                    }
+                });
+            } else {
+                consolidatedDossier = rawCorpus;
+            }
+
+            // If time still remains on a long training run, continue pulsing and deepening the synaptic structure
+            while (performance.now() < endTime && !activeTrainingAborted) {
+                const rem = Math.ceil((endTime - performance.now()) / 1000);
+                statusEl.textContent = `[PHASE 3/3] Cross-referencing edge cases & settling manifold... (${rem}s remaining)`;
+                previewTelemetry.textContent = `DENDRITIC STABILIZATION: ${rem}s REMAINING`;
+                await new Promise(r => setTimeout(r, 500));
+            }
+
+            clearInterval(growthInterval);
+
+            // Phase 3: Finalize, bind to permanent memory, and save
+            statusEl.textContent = `[FINALIZING] Binding consolidated knowledge vector to permanent memory...`;
+            previewTelemetry.textContent = `LOBE STABILIZED: ${topic.toUpperCase()}`;
+
+            // Save topic to model's list
+            const trainDict = getModelTrainingDict();
+            if (!trainDict[editingModelName]) trainDict[editingModelName] = [];
+            if (!trainDict[editingModelName].some(t => t.toLowerCase() === topic.toLowerCase())) {
+                trainDict[editingModelName].push(topic);
+                saveModelTrainingDict(trainDict);
+            }
+
+            // Save consolidated dossier into persistent corpus
+            const corpus = getKnowledgeCorpus();
+            if (!corpus[editingModelName]) corpus[editingModelName] = {};
+            corpus[editingModelName][topic] = consolidatedDossier;
+            saveKnowledgeCorpus(corpus);
+
+            input.value = '';
+            renderTrainedTopicsList();
+
+            setTimeout(() => {
+                btn.classList.remove('training');
+                btn.textContent = '+ Train';
+                cancelBtn.style.display = 'none';
+                statusEl.textContent = `Training complete. Ingested "${topic}" with ${maxSources} technical sources into permanent memory.`;
+                setTimeout(() => {
+                    previewContainer.classList.remove('active');
+                    if (trainingPreviewEngine) trainingPreviewEngine.stop();
+                }, 3500);
+            }, 1000);
+        }
+
+        function deleteTrainedTopic(topicName) {
+            if (!editingModelName) return;
+            const dict = getModelTrainingDict();
+            if (dict[editingModelName]) {
+                dict[editingModelName] = dict[editingModelName].filter(t => t !== topicName);
+                saveModelTrainingDict(dict);
+            }
+
+            const corpus = getKnowledgeCorpus();
+            if (corpus[editingModelName] && corpus[editingModelName][topicName]) {
+                delete corpus[editingModelName][topicName];
+                saveKnowledgeCorpus(corpus);
+            }
+
+            renderTrainedTopicsList();
+
+            if (hubManifoldEngine) hubManifoldEngine.setModel(editingModelName);
+            if (dedicatedStageEngine) dedicatedStageEngine.setModel(editingModelName);
+        }
+
+        function renderTrainedTopicsList() {
+            const listEl = document.getElementById('trainedTopicsList');
+            if (!listEl || !editingModelName) return;
+            
+            const topics = getTrainedTopicsForModel(editingModelName);
+            listEl.innerHTML = '';
+
+            if (topics.length === 0) {
+                listEl.innerHTML = '<span style="font-size: 11px; opacity: 0.6;">No custom domains trained yet.</span>';
+                return;
+            }
+
+            topics.forEach(t => {
+                const chip = document.createElement('div');
+                chip.className = 'trained-topic-chip';
+                chip.innerHTML = `
+                    <span>${escapeHTML(t)}</span>
+                    <button type="button" class="trained-topic-delete" onclick="deleteTrainedTopic('${escapeHTML(t)}')" title="Prune Topic">x</button>
+                `;
+                listEl.appendChild(chip);
+            });
         }
 
         /* ------------------------------------------------------------- */
@@ -3059,12 +3872,12 @@
             try {
                 const results = await performLiveWebSearch('Latest major world technology news');
                 if (results && results.length > 0) {
-                    statusEl.innerHTML = `<span style="color:#27ae60; font-weight:bold;">✓ Online & Connected</span> — ${results.length} sources retrieved.`;
+                    statusEl.innerHTML = `<span style="font-weight:bold;">Connected</span> - ${results.length} sources retrieved.`;
                 } else {
-                    statusEl.innerHTML = `<span style="color:#ff5c5c;">⚠️ No results returned. Verify network.</span>`;
+                    statusEl.innerHTML = `No results returned. Verify network.`;
                 }
             } catch (e) {
-                statusEl.innerHTML = `<span style="color:#ff5c5c;">✕ Search Error: ${e.message}</span>`;
+                statusEl.innerHTML = `Search Error: ${e.message}`;
             }
         }
 
@@ -3114,6 +3927,7 @@
                     dedicatedStageEngine.resize();
                     dedicatedStageEngine.start();
                 }
+                resetDedicatedZoom();
             }, 50);
         }
 
@@ -3216,7 +4030,7 @@
             const newKey = generateRandomPasskeyString();
             localStorage.setItem(PAIRING_PASSKEY_KEY, newKey);
             renderPasskeyUI();
-            alert("✓ New 16-Digit Master Passkey generated!\nOld phone connections have been reset.");
+            alert("New 16-Digit Master Passkey generated.\nOld phone connections have been reset.");
         }
 
         function promptCustomPasskey() {
@@ -3250,7 +4064,7 @@
             const fullKey = (s1 + s2 + s3 + s4).toUpperCase();
 
             if (fullKey.length < 8) {
-                alert("⚠️ Please enter the complete passkey.");
+                alert("Please enter the complete passkey.");
                 return;
             }
 
@@ -3268,7 +4082,7 @@
 
             loadModels();
             updateSystemStats();
-            alert(`✓ Device Paired Successfully! Host: ${host}`);
+            alert(`Device Paired Successfully. Host: ${host}`);
             closeSettings();
         }
 
@@ -3336,6 +4150,7 @@
                     hubManifoldEngine.resize();
                     hubManifoldEngine.start();
                 }
+                resetHubZoom();
             }, 50);
         }
 
@@ -3358,11 +4173,14 @@
             const specs = parseModelSpecs(modelName);
             document.getElementById('optModelArchSnippet').textContent = `${specs.params} • ${specs.layers} Layers • ${specs.clusters} Clusters`;
 
+            updateTrainDurationLabel(document.getElementById('trainDurationSlider').value);
+            renderTrainedTopicsList();
             document.getElementById('modelOptionsOverlay').classList.add('active');
         }
 
         function closeModelOptionsModal() { 
             document.getElementById('modelOptionsOverlay').classList.remove('active'); 
+            if (trainingPreviewEngine) trainingPreviewEngine.stop();
             editingModelName = null; 
         }
 
@@ -3415,6 +4233,14 @@
                 let webDict = getModelWebSearchDict();
                 delete webDict[editingModelName];
                 saveModelWebSearchDict(webDict);
+
+                let trainDict = getModelTrainingDict();
+                delete trainDict[editingModelName];
+                saveModelTrainingDict(trainDict);
+
+                let corpus = getKnowledgeCorpus();
+                delete corpus[editingModelName];
+                saveKnowledgeCorpus(corpus);
 
                 closeModelOptionsModal();
                 loadModels();
@@ -3477,8 +4303,8 @@
                 pb.className = 'progress-bar-container';
                 pf.style.width = '100%';
                 pullBtn.className = 'app-button pull-model-btn success';
-                pullBtn.innerHTML = '✓ Pulled';
-                statusEl.innerHTML = `<span style="color:#ffffff; font-weight:bold;">✓ Successfully pulled ${escapeHTML(name)}</span>`;
+                pullBtn.innerHTML = 'Pulled';
+                statusEl.innerHTML = `Successfully pulled ${escapeHTML(name)}`;
                 
                 loadModels();
                 inputEl.value = '';
@@ -3495,8 +4321,8 @@
                 pb.style.display = 'none';
                 pf.style.width = '0%';
                 pullBtn.className = 'app-button pull-model-btn error';
-                pullBtn.innerHTML = '✕ Failed';
-                statusEl.innerHTML = `<span style="color:#ff5c5c;">✕ Failed: ${escapeHTML(err.message)}</span>`;
+                pullBtn.innerHTML = 'Failed';
+                statusEl.innerHTML = `Failed: ${escapeHTML(err.message)}`;
                 setTimeout(() => {
                     pullBtn.disabled = false;
                     pullBtn.className = 'app-button pull-model-btn';
@@ -3803,7 +4629,7 @@
             const container = document.getElementById('chatMessages');
             container.innerHTML = '';
             if (chat.messages.length === 0) {
-                appendMessage('Hello! Ready to chat.', 'assistant', false);
+                appendMessage('Hello. Ready to chat.', 'assistant', false);
             } else {
                 chat.messages.forEach(msg => {
                     appendMessage(msg.content, msg.role, false, null, msg.meta, msg.sources, msg.id);
@@ -3916,7 +4742,7 @@
             } catch (e) {
                 statusEl.innerHTML = `<span id="settingsStatusDot" class="status-dot"></span> Status: Offline / Blocked`;
                 setConnectedStatus(false);
-                listEl.innerHTML = '<div class="model-picker-item" style="color:#ff5c5c;">Could not reach backend.</div>';
+                listEl.innerHTML = '<div class="model-picker-item">Could not reach backend.</div>';
             }
         }
 
@@ -3957,9 +4783,53 @@
         }
         function cancelGeneration() { if (activeController) { activeController.abort(); activeController = null; } setGeneratingState(false); }
 
+        /* ------------------------------------------------------------- */
+        /* CONTEXT-AWARE COGNITIVE CLUSTER FIRING DISPATCHER             */
+        /* ------------------------------------------------------------- */
+        function triggerInferenceClusterPulse(textChunk, currentModelName) {
+            const txt = textChunk.toLowerCase();
+            const trainedTopics = getTrainedTopicsForModel(currentModelName);
+
+            let matchedTrainedIdx = -1;
+            for (let i = 0; i < trainedTopics.length; i++) {
+                const topicWords = trainedTopics[i].toLowerCase().split(/\s+/);
+                if (topicWords.some(w => w.length > 2 && txt.includes(w))) {
+                    matchedTrainedIdx = 4 + i;
+                    break;
+                }
+            }
+
+            if (matchedTrainedIdx !== -1) {
+                if (hubManifoldEngine) hubManifoldEngine.pulseCluster(matchedTrainedIdx, 2.2);
+                if (dedicatedStageEngine) dedicatedStageEngine.pulseCluster(matchedTrainedIdx, 2.2);
+                return;
+            }
+
+            // Coding Cluster
+            if (txt.includes('```') || txt.includes('function') || txt.includes('const ') || txt.includes('class ') || txt.includes('import ') || txt.includes('return ') || txt.includes('def ')) {
+                if (hubManifoldEngine) hubManifoldEngine.pulseCluster(1, 1.8);
+                if (dedicatedStageEngine) dedicatedStageEngine.pulseCluster(1, 1.8);
+            }
+            // Logic & Math Cluster
+            else if (txt.includes('=') || txt.includes('calculate') || txt.includes('formula') || txt.includes('equation') || txt.includes('theorem') || txt.includes('algorithm') || /\d+\s*[\+\-\*\/]\s*\d+/.test(txt)) {
+                if (hubManifoldEngine) hubManifoldEngine.pulseCluster(0, 1.8);
+                if (dedicatedStageEngine) dedicatedStageEngine.pulseCluster(0, 1.8);
+            }
+            // Creative & Linguistics
+            else if (txt.includes('poem') || txt.includes('story') || txt.includes('metaphor') || txt.includes('novel') || txt.includes('creative') || txt.includes('character')) {
+                if (hubManifoldEngine) hubManifoldEngine.pulseCluster(3, 1.8);
+                if (dedicatedStageEngine) dedicatedStageEngine.pulseCluster(3, 1.8);
+            }
+            // General Cognition
+            else {
+                if (hubManifoldEngine) hubManifoldEngine.pulseCluster(2, 1.4);
+                if (dedicatedStageEngine) dedicatedStageEngine.pulseCluster(2, 1.4);
+            }
+        }
+
         async function sendMessage() {
             const input = document.getElementById('userInput'), prompt = input.value.trim();
-            if (!prompt || !currentModel) { if (!currentModel) alert('Select a model first!'); return; }
+            if (!prompt || !currentModel) { if (!currentModel) alert('Select a model first.'); return; }
             input.value = '';
             const chat = chats.find(c => c.id === currentChatId);
             if (chat.messages.length === 0) chat.title = prompt.length > 25 ? prompt.substring(0, 25) + '...' : prompt;
@@ -3980,7 +4850,7 @@
             let retrievedSources = [];
 
             if (isChatWebSearchEnabled) {
-                metaEl.innerHTML = `<span class="pull-status-spinner"></span> 🌐 Searching live web for verified facts...`;
+                metaEl.innerHTML = `<span class="pull-status-spinner"></span> Searching live web for verified facts...`;
                 retrievedSources = await performLiveWebSearch(prompt);
                 webInspectionRegistry[msgId] = { query: prompt, sources: retrievedSources };
             }
@@ -3988,6 +4858,25 @@
             const globalRules = getGlobalRuleBook();
             const modelRules = getModelRulesDict()[currentModel] || '';
             let combinedRules = [globalRules, modelRules].filter(Boolean).join('\n\n');
+
+            // RETRIEVE REAL INGESTED KNOWLEDGE CORPUS FOR CURRENT MODEL
+            const corpus = getKnowledgeCorpus()[currentModel] || {};
+            const activeTrainedTopics = getTrainedTopicsForModel(currentModel);
+            const promptLower = prompt.toLowerCase();
+
+            const relevantKnowledgeBlocks = [];
+            activeTrainedTopics.forEach(t => {
+                const words = t.toLowerCase().split(/\s+/);
+                if (words.some(w => w.length > 2 && promptLower.includes(w)) || activeTrainedTopics.length <= 3) {
+                    if (corpus[t]) {
+                        relevantKnowledgeBlocks.push(`[INGESTED NEURAL DOMAIN: ${t.toUpperCase()}]\n${corpus[t]}`);
+                    }
+                }
+            });
+
+            if (relevantKnowledgeBlocks.length > 0) {
+                combinedRules += `\n\n<trained_neural_knowledge_base>\n${relevantKnowledgeBlocks.join('\n\n')}\n</trained_neural_knowledge_base>\n[MANDATE]: Treat all knowledge inside <trained_neural_knowledge_base> as verified foundational ground truth learned by your weights. Utilize these exact facts, terminology, and heuristics in your response.`;
+            }
 
             if (retrievedSources.length > 0) {
                 const webContextBlock = retrievedSources.map((s, idx) => `[Source ${idx+1}: ${s.title}]\nURL: ${s.url}\nData: ${s.snippet}`).join('\n\n');
@@ -4028,12 +4917,12 @@
                         if (!line.trim()) continue;
                         const parsed = JSON.parse(line);
                         if (parsed.message?.content) {
-                            full += parsed.message.content;
+                            const newChunk = parsed.message.content;
+                            full += newChunk;
                             renderFormattedMessage(msgEl, full);
                             msgEl.scrollIntoView({behavior: 'smooth', block: 'nearest'});
 
-                            if (hubManifoldEngine) hubManifoldEngine.pulse();
-                            if (dedicatedStageEngine) dedicatedStageEngine.pulse();
+                            triggerInferenceClusterPulse(newChunk, currentModel);
                         }
                         if (parsed.done) { count = parsed.eval_count || 0; dur = parsed.eval_duration || 1; }
                     }
@@ -4041,7 +4930,8 @@
                 
                 let metaText = '';
                 if (dur > 0 && count > 0) metaText = `${(count / (dur / 1e9)).toFixed(1)} tok/s (${count} tokens)`;
-                if (retrievedSources.length > 0) metaText = `🌐 Web Grounded • ${metaText}`;
+                if (relevantKnowledgeBlocks.length > 0) metaText = `Trained Vector Grounded • ${metaText}`;
+                if (retrievedSources.length > 0) metaText = `Web Grounded • ${metaText}`;
                 metaEl.textContent = metaText;
 
                 if (retrievedSources.length > 0) {
@@ -4092,7 +4982,7 @@
             if (msgId) {
                 const inspectBtn = document.createElement('button');
                 inspectBtn.className = 'inspect-web-btn';
-                inspectBtn.innerHTML = `🔍 Inspect Sources (${sources.length})`;
+                inspectBtn.innerHTML = `Inspect Sources (${sources.length})`;
                 inspectBtn.onclick = () => openWebInspectModal(msgId);
                 container.appendChild(inspectBtn);
             }
@@ -4146,7 +5036,7 @@
                     
                     const btn = document.createElement('button'); 
                     btn.className = 'run-code-btn'; 
-                    btn.textContent = '▶ Run Code';
+                    btn.textContent = 'Run Code';
                     btn.dataset.codeId = codeId;
                     btn.onclick = function() {
                         const storedCode = codeStorageRegistry[this.dataset.codeId];
@@ -4218,7 +5108,7 @@
         function renderPreview(code) {
             const frame = document.getElementById('runnerPreviewFrame');
             let html = (!code.toLowerCase().includes('<!doctype') && !code.toLowerCase().includes('<html>'))
-                ? `<!DOCTYPE html><html><head><style>body{font-family:system-ui,sans-serif;padding:12px;background:#0c0c0c;color:#ffffff;margin:0;}h3{color:#fff;font-size:12px;border-bottom:1px solid #333;padding-bottom:4px;margin-top:0;}#out{white-space:pre-wrap;font-family:monospace;font-size:12px;color:#cccccc;line-height:1.4;}</style></head><body><h3>Console & Live Output</h3><div id="out"></div><script>const log=console.log;const o=document.getElementById('out');console.log=(...a)=>{log(...a);o.textContent+=a.map(x=>typeof x==='object'?JSON.stringify(x,null,2):x).join(' ')+'\\n';};try{${code}}catch(e){o.style.color='#ff6b6b';o.textContent+='Error: '+e.message;}<\\/script></body></html>`
+                ? `<!DOCTYPE html><html><head><style>body{font-family:system-ui,sans-serif;padding:12px;background:#0c0c0c;color:#ffffff;margin:0;}h3{color:#fff;font-size:12px;border-bottom:1px solid #333;padding-bottom:4px;margin-top:0;}#out{white-space:pre-wrap;font-family:monospace;font-size:12px;color:#cccccc;line-height:1.4;}</style></head><body><h3>Console & Live Output</h3><div id="out"></div><script>const log=console.log;const o=document.getElementById('out');console.log=(...a)=>{log(...a);o.textContent+=a.map(x=>typeof x==='object'?JSON.stringify(x,null,2):x).join(' ')+'\\n';};try{${code}}catch(e){o.style.color='#ffffff';o.textContent+='Error: '+e.message;}<\\/script></body></html>`
                 : code;
             frame.srcdoc = html;
         }
@@ -4239,7 +5129,7 @@
                 await callAiWorker('init-tts', { modelId: voiceId }, (pct) => {
                     statusEl.textContent = `Downloading: ${pct}%`;
                 });
-                btn.textContent = '✓ Ready';
+                btn.textContent = 'Ready';
                 statusEl.textContent = 'Model Status: Ready';
             } catch (err) {
                 btn.disabled = false;
@@ -4352,7 +5242,7 @@
                 await callAiWorker('init-stt', {}, (pct) => {
                     statusEl.textContent = `Downloading: ${pct}%`;
                 });
-                btn.textContent = '✓ Ready';
+                btn.textContent = 'Ready';
                 statusEl.textContent = 'Model Status: Ready (39MB)';
             } catch (err) {
                 btn.disabled = false;
@@ -4368,7 +5258,7 @@
             cleanupAudioPipeline();
             micBtn.classList.remove('listening', 'transcribing');
             micBtn.classList.add('error');
-            inputEl.placeholder = `⚠️ Audio: ${msg || 'Capture Error'}`;
+            inputEl.placeholder = `Audio: ${msg || 'Capture Error'}`;
             setTimeout(() => {
                 micBtn.classList.remove('error');
                 inputEl.placeholder = "Type a message, tap globe for web search, or tap mic...";
@@ -4617,7 +5507,7 @@
                     const isSubtle = bgState.type === 'subtle';
                     ctx.fillStyle = isSubtle ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.06)';
                     ctx.fillRect(0, 0, w, h);
-                    ctx.fillStyle = isSubtle ? 'rgba(255, 255, 255, 0.14)' : (bgState.type === 'green' ? '#00ff66' : '#ffffff');
+                    ctx.fillStyle = isSubtle ? 'rgba(255, 255, 255, 0.14)' : '#ffffff';
                     ctx.font = '14px monospace';
 
                     const shouldAdvance = isSubtle ? (bgState.frame % 2 === 0) : true;
