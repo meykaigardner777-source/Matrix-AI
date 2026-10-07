@@ -1,26 +1,18 @@
 {
-  "name": "matrix-ai",
+  "name": "matrix-ai-hub",
   "version": "1.0.0",
+  "description": "Matrix AI Neural Hub and Device Fleet Controller",
   "main": "main.js",
   "scripts": {
-    "build": "electron-builder"
+    "start": "electron .",
+    "build": "electron-builder --win portable"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "electron": "^33.0.0",
-    "electron-builder": "^25.1.8"
-  },
-  "build": {
-    "appId": "com.Matrix AI.app",
-    "productName": "Matrix AI",
-    "directories": {
-      "output": "dist"
-    },
-    "win": {
-      "target": ["nsis"]
-    },
-    "files": [
-      "index.html",
-      "main.js"
-    ]
+    "electron-builder": "^25.0.0"
   }
 }
