@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- PWA Installable Fullscreen Headers -->
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiTWF0cml4IEFJIiwic2hvcnRfbmFtZSI6Ik1hdHJpeCIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwidGhlbWVfY29sb3IiOiIjMDgwODA4IiwiYmFja2dyb3VuZF9jb2xvciI6IiMwODA4MDgifQ==">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
@@ -660,7 +664,7 @@
         }
         .run-code-btn:hover { background: rgba(255, 255, 255, 0.25); transform: scale(1.04); }
 
-        /* LIVE WEB CITATION CHIPS & INSPECTION BAR */
+        /* LIVE WEB CITATION CHIPS */
         .sources-container {
             display: flex;
             flex-wrap: wrap;
@@ -922,6 +926,37 @@
         input:checked + .toggle-slider:before {
             transform: translateX(18px);
             background-color: var(--panel-bg);
+        }
+
+        /* CONNECTED DEVICES FLEET DECK */
+        .device-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .device-telemetry-pill {
+            font-size: 10px;
+            font-family: monospace;
+            opacity: 0.75;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .fleet-action-chip {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 10.5px;
+            padding: 3px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .fleet-action-chip:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #ffffff;
+            transform: scale(1.05);
         }
 
         /* DEDICATED 80% BY 80% SCREEN NEURAL STAGE MODAL */
@@ -1236,6 +1271,7 @@
             border-radius: 7px;
             cursor: pointer;
             font-size: 12.5px;
+            display: space-between;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1939,6 +1975,11 @@
         }
     </style>
 </head>
+<!-- PWA & Mobile App Settings -->
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiTWF0cml4IEFJIiwic2hvcnRfbmFtZSI6Ik1hdHJpeCIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwidGhlbWVfY29sb3IiOiIjMDgwODA4IiwiYmFja2dyb3VuZF9jb2xvciI6IiMwODA4MDgifQ==">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <body>
     <canvas id="matrix"></canvas>
 
@@ -2065,23 +2106,50 @@
                 </div>
 
                 <div id="pane-sync" class="settings-pane">
-                    <div class="settings-pane-title">Device Pairing & Topology</div>
+                    <div class="settings-pane-title">Device Fleet & Screen Organizer</div>
                     
+                    <!-- MASTER PASSKEY DISPLAY / INPUT -->
                     <div class="passkey-block-container">
-                        <div style="font-weight: bold; font-size: 13px;">PC Server Master Passkey</div>
-                        <div class="preview-desc-text">Enter this 16-character passkey on your phone app to link directly to your PC AI engine.</div>
+                        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                            <span style="font-weight: bold; font-size: 13px;">Matrix Mesh Passkey</span>
+                            <span id="meshRoleBadge" class="thought-timer-badge" style="background: rgba(255,30,68,0.2); border-color: #ff1e44; color: #fff;">Host Master</span>
+                        </div>
+                        <div class="preview-desc-text">Use this passkey to link your phone and tablet into the unified neural mesh.</div>
                         
                         <div id="passkeyDisplayBadge" class="passkey-badge-display">---- - ---- - ---- - ----</div>
                         
                         <div class="row-group">
-                            <button type="button" class="app-button" onclick="generateRandomPasskey()">Generate New Key</button>
-                            <button type="button" class="app-button" onclick="promptCustomPasskey()">Custom Key</button>
+                            <button type="button" class="app-button" onclick="generateRandomPasskey()">Regenerate Key</button>
+                            <button type="button" class="app-button" onclick="copyMeshJoinLink()">Copy Link For Phone</button>
                         </div>
                     </div>
 
-                    <div class="passkey-block-container">
-                        <div style="font-weight: bold; font-size: 13px;">Connect This Phone to PC Host</div>
-                        <div class="preview-desc-text">If you are on your phone, type the 16-digit passkey from your PC screen below:</div>
+                    <!-- DEVICE DECK ORGANIZER -->
+                    <div class="settings-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label class="settings-label">Active Screen Fleet (<span id="meshDeviceCount">1</span>)</label>
+                            <button type="button" class="close-sidebar-btn" style="padding: 2px 8px; font-size: 10px;" onclick="broadcastMeshPulse()">Ping All Screens</button>
+                        </div>
+                        
+                        <div id="deviceTopologyList" class="topology-list">
+                            <!-- Connected devices show up here -->
+                        </div>
+                    </div>
+
+                    <!-- REMOTE SCREEN ACTION DISPATCHER -->
+                    <div class="settings-group" style="margin-top: 6px;">
+                        <label class="settings-label">Fleet Screen Commands</label>
+                        <div class="row-group">
+                            <button type="button" class="app-button" onclick="dispatchFleetScreenCommand('stage_3d')">Force Tablets to 3D Stage</button>
+                            <button type="button" class="app-button" onclick="dispatchFleetScreenCommand('toggle_theme')">Sync Color Theme</button>
+                            <button type="button" class="app-button" onclick="dispatchFleetScreenCommand('screen_flash')">Flash Remote Screens</button>
+                        </div>
+                    </div>
+
+                    <!-- PAIR INCOMING PHONE / TABLET MANUAL INPUT -->
+                    <div class="passkey-block-container" style="margin-top: 6px;">
+                        <div style="font-weight: bold; font-size: 12.5px;">Link This Screen As Client</div>
+                        <div class="preview-desc-text">If you are on your Phone or Tablet right now, enter the PC's Passkey:</div>
                         
                         <div class="passkey-segment-grid">
                             <input type="text" id="passSeg1" class="passkey-segment-input" maxlength="4" placeholder="XXXX" oninput="handlePasskeyInput(this, 'passSeg2')" />
@@ -2090,23 +2158,9 @@
                             <input type="text" id="passSeg4" class="passkey-segment-input" maxlength="4" placeholder="XXXX" oninput="handlePasskeyInput(this, null)" />
                         </div>
                         
-                        <div class="row-group" style="margin-top: 2px;">
-                            <button type="button" class="app-button" style="background: rgba(255,255,255,0.18);" onclick="submitPhonePasskey()">Pair With PC</button>
+                        <div class="row-group" style="margin-top: 4px;">
+                            <button type="button" class="app-button" style="background: rgba(255,255,255,0.18);" onclick="submitPhonePasskey()">Pair Screen To Master</button>
                         </div>
-                    </div>
-
-                    <div class="settings-group">
-                        <label class="settings-label">Connected Pair Topology</label>
-                        <div id="deviceTopologyList" class="topology-list"></div>
-                    </div>
-
-                    <div class="settings-group" style="margin-top: 4px;">
-                        <label class="settings-label">PC Server Tunnel Host URL</label>
-                        <input type="text" id="syncHostInput" class="settings-input" placeholder="https://your-tunnel.trycloudflare.com or http://192.168.1.50:11434" onchange="updatePairingHost()" />
-                    </div>
-
-                    <div class="row-group" style="margin-top: 4px;">
-                        <button type="button" class="danger-button" onclick="unpairClientOrMaster()">Unpair / Revoke All Devices</button>
                     </div>
                 </div>
 
@@ -3964,88 +4018,18 @@ Generate the concise master knowledge dossier now:`;
             return res;
         }
 
-        function getPairedDevices() {
-            try {
-                return JSON.parse(localStorage.getItem(PAIRED_DEVICES_KEY)) || [
-                    { id: 'host-pc', name: 'PC AI Host Engine (This Machine)', type: 'desktop', role: 'Server', ping: 'Localhost', status: 'active', date: 'Active' }
-                ];
-            } catch (e) {
-                return [];
-            }
-        }
-
-        function savePairedDevices(list) {
-            localStorage.setItem(PAIRED_DEVICES_KEY, JSON.stringify(list));
-            renderPairedTopologyUI();
-        }
-
-        function renderPairedTopologyUI() {
-            const listEl = document.getElementById('deviceTopologyList');
-            if (!listEl) return;
-            const devices = getPairedDevices();
-            listEl.innerHTML = '';
-
-            devices.forEach(dev => {
-                const item = document.createElement('div');
-                item.className = 'topology-item';
-                const isHost = dev.id === 'host-pc';
-                const iconSvg = dev.type === 'phone' 
-                    ? `<svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>`
-                    : `<svg viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>`;
-
-                item.innerHTML = `
-                    <div class="topology-info">
-                        <div class="topology-icon">${iconSvg}</div>
-                        <div class="topology-meta">
-                            <span class="topology-name">${escapeHTML(dev.name)}</span>
-                            <span class="topology-sub">
-                                <span class="status-dot ${dev.status === 'active' ? 'connected' : ''}"></span>
-                                ${dev.role} • ${dev.ping}
-                            </span>
-                        </div>
-                    </div>
-                    ${!isHost ? `<button class="delete-chat-btn" title="Unpair Device" onclick="disconnectDevice('${dev.id}')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>` : ''}
-                `;
-                listEl.appendChild(item);
-            });
-        }
-
-        function disconnectDevice(id) {
-            let devices = getPairedDevices().filter(d => d.id !== id);
-            savePairedDevices(devices);
-        }
-
         function renderPasskeyUI() {
             const key = getOrCreatePasskey();
             const badge = document.getElementById('passkeyDisplayBadge');
             if (badge) badge.textContent = format16Key(key);
-
-            const savedHost = localStorage.getItem(HOST_STORAGE_KEY) || 'http://localhost:11434';
-            const syncInput = document.getElementById('syncHostInput');
-            if (syncInput) syncInput.value = savedHost;
-            renderPairedTopologyUI();
+            renderFleetOrganizerUI();
         }
 
         function generateRandomPasskey() {
             const newKey = generateRandomPasskeyString();
             localStorage.setItem(PAIRING_PASSKEY_KEY, newKey);
             renderPasskeyUI();
-            alert("New 16-Digit Master Passkey generated.\nOld phone connections have been reset.");
-        }
-
-        function promptCustomPasskey() {
-            const curr = localStorage.getItem(PAIRING_PASSKEY_KEY) || '';
-            const entered = prompt("Enter a custom 16-character passkey:", curr);
-            if (entered !== null) {
-                const clean = entered.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-                if (clean.length < 4) {
-                    alert("Enter at least 4 alphanumeric characters.");
-                    return;
-                }
-                const padded = clean.padEnd(16, '0').substring(0, 16);
-                localStorage.setItem(PAIRING_PASSKEY_KEY, padded);
-                renderPasskeyUI();
-            }
+            alert("New 16-Digit Master Passkey generated.\nOld screen connections have been reset.");
         }
 
         function handlePasskeyInput(currInput, nextId) {
@@ -4069,49 +4053,10 @@ Generate the concise master knowledge dossier now:`;
             }
 
             localStorage.setItem(PAIRING_PASSKEY_KEY, fullKey);
-            const host = (document.getElementById('syncHostInput').value || localStorage.getItem(HOST_STORAGE_KEY) || 'http://localhost:11434').trim().replace(/\/$/, '');
-            localStorage.setItem(HOST_STORAGE_KEY, host);
-            document.getElementById('hostUrl').value = host;
-
-            const devices = getPairedDevices();
-            const clientName = /iPhone|iPad|Android/i.test(navigator.userAgent) ? 'Mobile Client' : 'Remote Client';
-            if (!devices.some(d => d.id === 'paired-client')) {
-                devices.push({ id: 'paired-client', name: clientName, type: 'phone', role: 'Paired Client', ping: '18ms Synced', status: 'active', date: 'Active' });
-                savePairedDevices(devices);
-            }
-
-            loadModels();
-            updateSystemStats();
-            alert(`Device Paired Successfully. Host: ${host}`);
+            thisDevice = getLocalDeviceProfile();
+            broadcastHeartbeat();
+            alert(`Screen Paired Successfully to Master Mesh!`);
             closeSettings();
-        }
-
-        function updatePairingHost() {
-            const hostVal = document.getElementById('syncHostInput').value.trim();
-            if (hostVal) {
-                localStorage.setItem(HOST_STORAGE_KEY, hostVal);
-                document.getElementById('hostUrl').value = hostVal;
-                loadModels();
-                updateSystemStats();
-            }
-        }
-
-        function unpairClientOrMaster() {
-            if (confirm("Revoke all paired devices and reset connection keys?")) {
-                localStorage.removeItem(HOST_STORAGE_KEY);
-                localStorage.removeItem(PAIRING_PASSKEY_KEY);
-                localStorage.removeItem(PAIRED_DEVICES_KEY);
-                document.getElementById('hostUrl').value = 'http://localhost:11434';
-                document.getElementById('syncHostInput').value = 'http://localhost:11434';
-                document.getElementById('passSeg1').value = '';
-                document.getElementById('passSeg2').value = '';
-                document.getElementById('passSeg3').value = '';
-                document.getElementById('passSeg4').value = '';
-                getOrCreatePasskey();
-                renderPasskeyUI();
-                loadModels();
-                updateSystemStats();
-            }
         }
 
         /* ------------------------------------------------------------- */
@@ -5093,14 +5038,16 @@ Generate the concise master knowledge dossier now:`;
         /* ------------------------------------------------------------- */
         /* CODE RUNNER & AUDIO ENGINE                                    */
         /* ------------------------------------------------------------- */
-        function openRunnerModal(code) {
+       function openRunnerModal(code) {
             document.getElementById('runnerCodeEditor').value = code;
             document.getElementById('runnerModalOverlay').classList.add('active');
             renderPreview(code);
         }
+
         function closeRunnerModal() {
             document.getElementById('runnerModalOverlay').classList.remove('active');
         }
+
         function runEditableCode() { 
             renderPreview(document.getElementById('runnerCodeEditor').value); 
         }
@@ -5436,7 +5383,7 @@ Generate the concise master knowledge dossier now:`;
             window.addEventListener('resize', resize);
 
             const type = localStorage.getItem(MATRIX_ANIM_KEY) || 'neural';
-            if (type === 'none') { ctx.clearRect(0,0,canvas.width,canvas.height); return; }
+            if (type === 'none') { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
 
             bgState = {
                 type, time: 0, frame: 0, gridOffset: 0,
@@ -5609,10 +5556,269 @@ Generate the concise master knowledge dossier now:`;
             render();
         }
 
+        /* ------------------------------------------------------------- */
+        /* MATRIX FLEET SYNCHRONIZATION & SCREEN CONTROLLER             */
+        /* ------------------------------------------------------------- */
+        const FLEET_CHANNEL_NAME = 'matrix_mesh_channel_v1';
+        let fleetBroadcast = new BroadcastChannel(FLEET_CHANNEL_NAME);
+        let fleetSocket = null;
+
+        // Auto-detect PC IP from saved host or default to localhost
+        function getMeshSocketUrl() {
+            const savedHost = localStorage.getItem(HOST_STORAGE_KEY) || 'http://localhost:11434';
+            try {
+                const parsed = new URL(savedHost);
+                return `ws://${parsed.hostname}:3001`;
+            } catch (e) {
+                return 'ws://localhost:3001';
+            }
+        }
+
+        function initMeshNetwork() {
+            // 1. Establish WebSocket link to PC Electron Server
+            try {
+                fleetSocket = new WebSocket(getMeshSocketUrl());
+
+                fleetSocket.onopen = () => {
+                    console.log('[FLEET] Connected to PC Electron Mesh Server');
+                    broadcastHeartbeat();
+                };
+
+                fleetSocket.onmessage = (event) => {
+                    handleIncomingFleetMessage(JSON.parse(event.data));
+                };
+
+                fleetSocket.onerror = () => {
+                    console.log('[FLEET] Operating in standalone/local mode');
+                };
+
+                fleetSocket.onclose = () => {
+                    setTimeout(initMeshNetwork, 5000); // Reconnect if PC restarts
+                };
+            } catch (e) {}
+
+            // 2. Fallback listener for local tabs
+            fleetBroadcast.onmessage = (event) => {
+                handleIncomingFleetMessage(event.data);
+            };
+        }
+
+        function emitFleetPacket(packet) {
+            const dataStr = JSON.stringify(packet);
+            // Send over network to Electron Server
+            if (fleetSocket && fleetSocket.readyState === WebSocket.OPEN) {
+                fleetSocket.send(dataStr);
+            }
+            // Send locally to any open browser tabs
+            fleetBroadcast.postMessage(packet);
+        }
+
+        function getLocalDeviceProfile() {
+            const ua = navigator.userAgent.toLowerCase();
+            let type = 'desktop';
+            let name = 'PC Workstation (.exe)';
+
+            if (/ipad|tablet|(android(?!.*mobile))/i.test(ua)) {
+                type = 'tablet';
+                name = 'Tablet Screen (PWA)';
+            } else if (/iphone|ipod|android.*mobile/i.test(ua)) {
+                type = 'phone';
+                name = 'Phone Terminal (PWA)';
+            }
+
+            let devId = localStorage.getItem('matrix_own_device_id');
+            if (!devId) {
+                devId = 'dev_' + Math.random().toString(36).substring(2, 9);
+                localStorage.setItem('matrix_own_device_id', devId);
+            }
+
+            return {
+                id: devId,
+                name: localStorage.getItem('matrix_own_device_name') || name,
+                type: type,
+                role: type === 'desktop' ? 'Master Engine' : 'Satellite Screen',
+                screen: `${window.innerWidth}x${window.innerHeight}`,
+                status: 'online',
+                lastSeen: Date.now()
+            };
+        }
+
+        let thisDevice = getLocalDeviceProfile();
+        let connectedFleet = [thisDevice];
+
+        function setupFleetMesh() {
+            initMeshNetwork();
+            broadcastHeartbeat();
+            setInterval(broadcastHeartbeat, 4000);
+        }
+
+        function handleIncomingFleetMessage(data) {
+            const { type, sender, payload } = data;
+            if (!sender || sender.id === thisDevice.id) return;
+
+            switch (type) {
+                case 'HEARTBEAT':
+                    registerOrUpdateDevice(sender);
+                    break;
+                case 'SCREEN_COMMAND':
+                    executeRemoteScreenCommand(payload.action, payload.targetDeviceId);
+                    break;
+                case 'PULSE_ALERT':
+                    flashDeviceScreen();
+                    break;
+            }
+        }
+
+        function broadcastHeartbeat() {
+            thisDevice.screen = `${window.innerWidth}x${window.innerHeight}`;
+            thisDevice.lastSeen = Date.now();
+            emitFleetPacket({
+                type: 'HEARTBEAT',
+                sender: thisDevice
+            });
+            cleanPrunedDevices();
+        }
+
+        function registerOrUpdateDevice(remoteDev) {
+            const existingIdx = connectedFleet.findIndex(d => d.id === remoteDev.id);
+            if (existingIdx !== -1) {
+                connectedFleet[existingIdx] = { ...connectedFleet[existingIdx], ...remoteDev, lastSeen: Date.now() };
+            } else {
+                connectedFleet.push({ ...remoteDev, lastSeen: Date.now() });
+            }
+            renderFleetOrganizerUI();
+        }
+
+        function cleanPrunedDevices() {
+            const now = Date.now();
+            const prevCount = connectedFleet.length;
+            connectedFleet = connectedFleet.filter(d => d.id === thisDevice.id || (now - d.lastSeen) < 10000);
+            if (connectedFleet.length !== prevCount) {
+                renderFleetOrganizerUI();
+            }
+        }
+
+        function renderFleetOrganizerUI() {
+            const listEl = document.getElementById('deviceTopologyList');
+            const countEl = document.getElementById('meshDeviceCount');
+            if (!listEl) return;
+
+            if (countEl) countEl.textContent = connectedFleet.length;
+            listEl.innerHTML = '';
+
+            connectedFleet.forEach(dev => {
+                const isSelf = dev.id === thisDevice.id;
+                const item = document.createElement('div');
+                item.className = 'topology-item';
+
+                const iconSvg = dev.type === 'tablet' 
+                    ? `<svg viewBox="0 0 24 24"><path d="M19 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 18c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm7-3H5V4h14v13z"/></svg>`
+                    : dev.type === 'phone'
+                    ? `<svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>`
+                    : `<svg viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>`;
+
+                item.innerHTML = `
+                    <div class="topology-info">
+                        <div class="topology-icon">${iconSvg}</div>
+                        <div class="topology-meta">
+                            <div class="device-card-header">
+                                <span class="topology-name">${escapeHTML(dev.name)} ${isSelf ? '(This Screen)' : ''}</span>
+                                <span class="device-telemetry-pill">${dev.screen}</span>
+                            </div>
+                            <span class="topology-sub">
+                                <span class="status-dot connected"></span>
+                                ${dev.role} • ${dev.type.toUpperCase()}
+                            </span>
+                        </div>
+                    </div>
+                    ${!isSelf ? `
+                        <div style="display: flex; gap: 4px; align-items: center;">
+                            <button type="button" class="fleet-action-chip" onclick="dispatchDirectDeviceScreen('${dev.id}', 'stage_3d')">Stage</button>
+                            <button type="button" class="fleet-action-chip" onclick="dispatchDirectDeviceScreen('${dev.id}', 'flash')">Flash</button>
+                            <button type="button" class="fleet-action-chip" onclick="renameFleetDevice('${dev.id}')">Rename</button>
+                        </div>
+                    ` : ''}
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        function dispatchFleetScreenCommand(action) {
+            emitFleetPacket({
+                type: 'SCREEN_COMMAND',
+                sender: thisDevice,
+                payload: { action: action, targetDeviceId: 'ALL' }
+            });
+        }
+
+        function dispatchDirectDeviceScreen(deviceId, action) {
+            emitFleetPacket({
+                type: 'SCREEN_COMMAND',
+                sender: thisDevice,
+                payload: { action: action, targetDeviceId: deviceId }
+            });
+        }
+
+        function broadcastMeshPulse() {
+            emitFleetPacket({
+                type: 'PULSE_ALERT',
+                sender: thisDevice
+            });
+            flashDeviceScreen();
+        }
+
+        function executeRemoteScreenCommand(action, targetDeviceId) {
+            if (targetDeviceId !== 'ALL' && targetDeviceId !== thisDevice.id) return;
+
+            if (action === 'stage_3d') {
+                openDedicatedNeuralStage();
+            } else if (action === 'toggle_theme') {
+                const currentTheme = localStorage.getItem(UI_THEME_KEY) || 'dark';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                saveUiTheme(newTheme);
+            } else if (action === 'flash' || action === 'screen_flash') {
+                flashDeviceScreen();
+            }
+        }
+
+        function flashDeviceScreen() {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+                background: #ff1e44; opacity: 0.45; z-index: 99999;
+                pointer-events: none; transition: opacity 0.5s ease-out;
+            `;
+            document.body.appendChild(overlay);
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.remove(), 500);
+            }, 150);
+        }
+
+        function renameFleetDevice(devId) {
+            const target = connectedFleet.find(d => d.id === devId);
+            if (!target) return;
+            const newName = prompt(`Enter new display name for ${target.name}:`, target.name);
+            if (newName && newName.trim()) {
+                target.name = newName.trim();
+                renderFleetOrganizerUI();
+            }
+        }
+
+        function copyMeshJoinLink() {
+            const passkey = getOrCreatePasskey();
+            const joinUrl = `${window.location.origin}${window.location.pathname}?mesh_key=${passkey}`;
+            navigator.clipboard.writeText(joinUrl).then(() => {
+                alert("Mesh URL copied to clipboard!\nOpen this link on your phone or tablet to join instantly.");
+            });
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             initNeuralWorker();
             loadChats();
             initBackgroundRenderer();
+            setupFleetMesh();
+            renderFleetOrganizerUI();
         });
     </script>
 </body>
